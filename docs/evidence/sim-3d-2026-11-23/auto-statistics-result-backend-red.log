@@ -1,0 +1,29 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/statistics-result-export.test.ts [ tests/statistics-result-export.test.ts ]
+Error: Cannot find module '/src/main/statistics-result-export' imported from <worktree>/tests/statistics-result-export.test.ts
+ ❯ tests/statistics-result-export.test.ts:13:1
+     11| import {Documents} from '../src/main/documents'
+     12| import {query} from '../src/main/query-schema'
+     13| import {exportStatisticsResult} from '../src/main/statistics-result-ex…
+       | ^
+     14| import {statisticsResultSchema,serializeStatisticsResult,type Statisti…
+     15|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:20:19
+   Duration  441ms (worker 96%, environment 4%)
+

@@ -1,0 +1,58 @@
+
+Running 1 test using 1 worker
+
+(node:64892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sim3d-decimals.spec.ts:243:1 › SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secciones (es)
+  1) [csv] › tests/e2e/sim3d-decimals.spec.ts:243:1 › SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secciones (es)
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+    @@ -12,11 +12,11 @@
+        "barraLateral": Object {
+          "ancho": 240,
+          "pestana": "files",
+          "visible": true,
+        },
+    -   "decimalesAnalisis": 2,
+    +   "decimalesAnalisis": "all",
+        "division": 50,
+        "editor": Object {
+          "csvColumnColors": true,
+          "indent": 2,
+          "tabIndents": false,
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      258 |  const expected={...before.values,tema:defaults.tema,decimalesAnalisis:2,barraLateral:defaults.barraLateral,markdown:defaults.markdown,editor:defaults.editor,division:defaults.division}
+      259 |  await dialog.getByRole('button',{name:'Restablecer esta sección',exact:true}).click()
+    > 260 |  await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).values)).toEqual(expected)
+          |                                                                                        ^
+      261 |  await expect(decimals).toHaveValue('2')
+      262 |  await expect(dialog).toHaveAttribute('aria-busy','false')
+      263 |  expect(JSON.parse(await readFile(join(folder,'profile','settings.json'),'utf8'))).toEqual(expected)
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:260:88
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-5b9bf-onserva-otras-secciones-es--csv/attachments/electron-context-1b28650a826744096db31a7b60c88795d038e784.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-deci-5b9bf-onserva-otras-secciones-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-5b9bf-onserva-otras-secciones-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-deci-5b9bf-onserva-otras-secciones-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:243:1 › SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secciones (es)

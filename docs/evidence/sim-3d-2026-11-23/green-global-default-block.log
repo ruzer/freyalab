@@ -1,0 +1,11 @@
+
+Running 3 tests using 1 worker
+
+(node:60102) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:90:1 › SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)
+[2/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:96:1 › SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)
+[3/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:103:1 › SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas principal (es) @solo
+  3 passed (5.4s)

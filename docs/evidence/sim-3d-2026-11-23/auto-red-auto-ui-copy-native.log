@@ -1,0 +1,95 @@
+
+Running 3 tests using 1 worker
+
+(node:21135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3d-decimals.spec.ts:100:1 › SIM-3d decimales: selector global accesible con opciones Automático y Más precisión (es) (17.8s)
+(node:21266) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/sim3d-decimals.spec.ts:114:1 › SIM-3d decimales: copia parcial y múltiple usa el valor completo en Estadísticas principal (es) @solo (2.1s)
+  ✘  3 [csv] › tests/e2e/sim3d-decimals.spec.ts:136:1 › SIM-3d formato: copiar Media coincide con el informe Markdown ya generado en ambos modos (es) @solo (17.4s)
+
+
+  1) [csv] › tests/e2e/sim3d-decimals.spec.ts:100:1 › SIM-3d decimales: selector global accesible con opciones Automático y Más precisión (es)
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+    Expected: "auto"
+    Received: "2"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveValue" locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+        34 × locator resolved to <select disabled class="svelte-iqt1nb" aria-label="Decimales" aria-describedby="analysis-number-help-analysis:6945807c-7061-4e9f-8bdc-2e119d4672e8" title="Todos muestra hasta 15 cifras significativas. 2 muestra hasta dos decimales; los números muy pequeños usan hasta dos cifras significativas.">…</select>
+           - unexpected value "2"
+
+
+      100 | test('SIM-3d decimales: selector global accesible con opciones Automático y Más precisión (es)',async()=>{
+      101 |  await openAnalysis(page,'Información')
+    > 102 |  await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toHaveValue('auto')
+          |                                                                            ^
+      103 |  await expect(decimalSelect().locator('option')).toHaveText(['Automático','Más precisión'])
+      104 |  await expect(workspace().getByText('Al copiar se copia el valor completo.',{exact:true})).toBeVisible()
+      105 | })
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:102:76
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-1ece6-omático-y-Más-precisión-es--csv/attachments/electron-context-5a36180cfc35fc8011fed1cd663eb6041ad11107.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-deci-1ece6-omático-y-Más-precisión-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-1ece6-omático-y-Más-precisión-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-deci-1ece6-omático-y-Más-precisión-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3d-decimals.spec.ts:136:1 › SIM-3d formato: copiar Media coincide con el informe Markdown ya generado en ambos modos (es) @solo
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+    Expected: enabled
+    Received: disabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeEnabled" locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+        34 × locator resolved to <select disabled class="svelte-iqt1nb" aria-label="Decimales" aria-describedby="analysis-number-help-analysis:24b64bb6-0023-474b-9da4-6a0f64022536" title="Todos muestra hasta 15 cifras significativas. 2 muestra hasta dos decimales; los números muy pequeños usan hasta dos cifras significativas.">…</select>
+           - unexpected value "disabled"
+
+
+      154 |
+      155 | async function chooseMode(mode:'auto'|'all'){
+    > 156 |  await expect(decimalSelect()).toBeEnabled();await decimalSelect().selectOption(mode)
+          |                                ^
+      157 |  await expect(decimalSelect()).toHaveValue(mode)
+      158 |  await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).values.decimalesAnalisis)).toBe(mode)
+      159 | }
+        at chooseMode (<worktree>/tests/e2e/sim3d-decimals.spec.ts:156:32)
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:146:9
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-form-eca1a-generado-en-ambos-modos-es--csv/attachments/electron-context-680851307b0998f6e5777f623938f289aaf1b663.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-form-eca1a-generado-en-ambos-modos-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-form-eca1a-generado-en-ambos-modos-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-form-eca1a-generado-en-ambos-modos-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:100:1 › SIM-3d decimales: selector global accesible con opciones Automático y Más precisión (es)
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:136:1 › SIM-3d formato: copiar Media coincide con el informe Markdown ya generado en ambos modos (es) @solo
+  1 passed (38.4s)

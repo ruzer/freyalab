@@ -1,13 +1,16 @@
 <script lang="ts">
- import {t} from '../lib/i18n.svelte'
+ import AnalysisNumber from './AnalysisNumber.svelte'
+ import {formatAnalysisNumber,formatAnalysisFullNumber,type AnalysisNumberMode,type AnalysisNumberKind} from '../../shared/analysis-number-format'
+ import {t,plural,getUILanguage} from '../lib/i18n.svelte'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import type {AnalysisExportAction} from '../lib/analysis-export'
  import {PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,columnReport,type ColumnReportContext} from '../lib/statistics-report'
+ import {columnAnalysisData} from '../lib/statistics-data'
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest,TableViewMeta} from '../../shared/types'
- let {doc,query,queryValid,viewMeta,onerror,onreport,column=$bindable(0),scope=$bindable('all'),externalExports=false}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;column?:number;scope?:'all'|'view';externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,query,queryValid,viewMeta,onerror,onreport,column=$bindable(0),scope=$bindable('all'),externalExports=false,numberMode='auto'}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;column?:number;scope?:'all'|'view';externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;numberMode?:AnalysisNumberMode}=$props()
  let otherColumn=$state(-1),duplicatesOnly=$state(false),bins=$state(10)
  let result=$state<ColumnAnalysis|null>(null),busy=$state(false),message=$state('Elige una columna. El análisis no modifica los datos.'),page=$state<'profile'|'frequencies'|'distribution'|'correlation'>('profile')
  let reportContext=$state<ColumnReportContext|null>(null),reporting=$state(false)
@@ -27,12 +30,25 @@
   finally{if(active===request.requestId){active=null;busy=false}}
  }
  async function report(){if(!result||!reportContext||busy||reporting||doc.revision!==result.revision)return;reporting=true;try{await onreport(columnReport($state.snapshot(reportContext),$state.snapshot(result),page))}catch(error){onerror(String(error))}finally{reporting=false}}
- export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':page==='correlation'&&!result?.correlation?'correlation':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':null,title:t('analysis.export.explorationHelp'),run:report}]}
+ async function exportData(format:'csv'|'json'){
+  if(!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation)return
+  const captured=$state.snapshot(reportContext),data=columnAnalysisData(captured,$state.snapshot(result),page)
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:result.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
+ export function exportActions():AnalysisExportAction[]{
+  const disabledReason=busy||reporting?'busy':page==='correlation'&&!result?.correlation?'correlation':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':null
+  const viewHelp=t('analysis.export.explorationHelp')
+  return[{label:t('describe.report'),disabledReason,title:viewHelp,run:report},{label:t('analysis.export.csv'),disabledReason,title:t('statistics.export.viewHelp')+' '+t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t('analysis.export.json'),disabledReason,title:t('statistics.export.viewHelp'),run:()=>exportData('json')}]
+ }
  const summary=$derived(result?columnSummary(result):null)
- const number=(value:number|null)=>value===null?'—':value.toLocaleString(undefined,{maximumSignificantDigits:12})
+ const countFields=new Set(['cells','empty','missing','whitespace','unique','duplicateGroups','duplicateRows','extraDuplicates','numeric','excluded','leadingZeros','minLength','maxLength'])
+ const number=(value:number|null)=>value===null?'—':formatAnalysisNumber(value,numberMode,getUILanguage(),'count')
  const columnName=(index:number)=>`${index+1}. ${doc.headers?.[index]||`Columna ${index+1}`}`
  const tabs=[['profile','Perfil'],['frequencies','Frecuencias'],['distribution','Distribución'],['correlation','Correlación']] as const
 </script>
+{#snippet numeric(value:number|null,unit='',kind:AnalysisNumberKind='number')}{#if value===null}—{:else}<AnalysisNumber {value} mode={numberMode} {unit} {kind}/>{/if}{/snippet}
 <section class="column-explorer" aria-label="Exploración de columna">
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
   <label>Columna <select aria-label="Columna para explorar" bind:value={column} disabled={busy}>{#each doc.headers??[] as name,index}<option value={index}>{index+1}. {name||`Columna ${index+1}`}</option>{/each}</select></label>
@@ -48,27 +64,28 @@
  {#if page==='distribution'}<label class="option">Intervalos <input aria-label="Número de intervalos" type="number" min="1" max="30" bind:value={bins} disabled={busy}/></label>{/if}
  {#if page==='correlation'}<label class="option">Comparar con <select aria-label="Columna para correlación" bind:value={otherColumn} disabled={busy}><option value={-1}>Elige otra columna</option>{#each doc.headers??[] as name,index}<option value={index}>{index+1}. {name||`Columna ${index+1}`}</option>{/each}</select></label>{/if}
  {#if result}
-  <p class="scope">{columnName(result.column)} · {result.sample?'Muestra limitada':result.filtered?'Vista filtrada':'Documento completo'} · {number(result.cells)} filas · revisión {result.revision}</p>
+  <p class="scope">{doc.headers?.[result.column]||t('columnAnalysis.unnamed',{n:result.column+1})} · {t(result.sample?'columnAnalysis.scope.sample':result.filtered?'columnAnalysis.scope.view':'columnAnalysis.scope.all')} · {plural('filas',result.cells)}</p>
   {#if page==='profile'}
-   {#if summary}<section class="interpretation" aria-label="Interpretación de columna"><p><strong>Tipo probable: {summary.label}</strong></p><p>{summary.reason}</p><p class="quality">{#each summary.quality as [label,value],index}{index?' · ':''}{label}: <strong>{number(value)}</strong>{/each}</p><small>Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan.</small></section>{/if}
-   <dl aria-label="Perfil de columna">{#each PROFILE_FIELDS as [key,label]}<div><dt>{label}</dt><dd>{number(result[key])}</dd></div>{/each}</dl>
-   <details><summary>Varianza y percentiles</summary><p>{NUMERIC_DETAIL_HELP}</p><dl aria-label="Varianza y percentiles">{#each NUMERIC_DETAIL_FIELDS as [key,label]}<div><dt>{label}</dt><dd>{number(result[key])}</dd></div>{/each}</dl></details>
+   {#if summary}<section class="interpretation" aria-label="Interpretación de columna"><p><strong>Tipo probable: {summary.label}</strong></p><p>{summary.reason}</p><p class="quality">{#each summary.quality as [label,value],index}{index?' · ':''}{label}: <strong title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(value)})}>{@render numeric(value,'','count')}</strong>{/each}</p><small>Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan.</small></section>{/if}
+   <dl aria-label="Perfil de columna">{#each PROFILE_FIELDS as [key,label]}<div><dt>{label}</dt><dd title={result[key]===null?undefined:t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result[key]!)})}>{@render numeric(result[key],'',countFields.has(key)?'count':'number')}</dd></div>{/each}</dl>
+   <details><summary>Varianza y percentiles</summary><p>{NUMERIC_DETAIL_HELP}</p><dl aria-label="Varianza y percentiles">{#each NUMERIC_DETAIL_FIELDS as [key,label]}<div><dt>{label}</dt><dd title={result[key]===null?undefined:t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result[key]!)})}>{@render numeric(result[key],'',countFields.has(key)?'count':'number')}</dd></div>{/each}</dl></details>
    {#if result.missingRows.length}<p>Primeras filas originales con vacíos (máximo 20; sin encabezado): {result.missingRows.map(item=>item.row).join(', ')}.</p>{/if}
   {:else if page==='frequencies'}
    <p>Valores de texto exactos, ordenados por frecuencia; empates por primera fila original. Las vistas previas largas se indican; no se agrupan por el texto recortado.</p>
    <!-- svelte-ignore a11y_no_noninteractive_tabindex (La región desplazable debe recibir foco para usar flechas y PageDown.) -->
-   <div class="results-scroll" tabindex="0" role="region" aria-label="Frecuencias de columna"><table><thead><tr><th>Valor</th><th>Conteo</th><th>Porcentaje de filas</th><th>Primera fila original</th></tr></thead><tbody>{#each result.frequencies as entry}<tr><td><pre>{JSON.stringify(entry.value)}</pre>{#if entry.truncated}<small>Vista previa: primeros 256 caracteres</small>{/if}</td><td>{number(entry.count)}</td><td>{number(result.cells?entry.count/result.cells*100:0)} %</td><td>{entry.firstRow}</td></tr>{/each}</tbody></table></div>
+   <div class="results-scroll" tabindex="0" role="region" aria-label="Frecuencias de columna"><table><thead><tr><th>Valor</th><th>Conteo</th><th>Porcentaje de filas</th><th>Primera fila original</th></tr></thead><tbody>{#each result.frequencies as entry}<tr><td><pre>{JSON.stringify(entry.value)}</pre>{#if entry.truncated}<small>Vista previa: primeros 256 caracteres</small>{/if}</td><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(entry.count)})}>{@render numeric(entry.count,'','count')}</td><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result.cells?entry.count/result.cells*100:0,' %')})}>{@render numeric(result.cells?entry.count/result.cells*100:0,' %','percent')}</td><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(entry.firstRow)})}>{@render numeric(entry.firstRow,'','count')}</td></tr>{/each}</tbody></table></div>
    <div class="pagination"><button {...controlHint(busy?'busy':result.frequencyOffset===0?'firstPage':null)} disabled={busy||result.frequencyOffset===0} onclick={()=>void analyze(Math.max(0,result!.frequencyOffset-50))}>Valores anteriores</button><span>{result.frequencyTotal?result.frequencyOffset+1:0}–{Math.min(result.frequencyOffset+50,result.frequencyTotal)} de {number(result.frequencyTotal)} valores</span><button {...controlHint(busy?'busy':result.frequencyOffset+50>=result.frequencyTotal?'lastPage':null)} disabled={busy||result.frequencyOffset+50>=result.frequencyTotal} onclick={()=>void analyze(result!.frequencyOffset+50)}>Valores siguientes</button></div>
   {:else if page==='distribution'}
    <p>Intervalos de igual amplitud: incluyen el límite inferior y excluyen el superior; el último incluye el máximo. Solo {number(result.numeric)} valores numéricos utilizables.</p>
    <!-- svelte-ignore a11y_no_noninteractive_tabindex (La región desplazable debe recibir foco para usar flechas y PageDown.) -->
-   <div class="results-scroll" tabindex="0" role="region" aria-label="Distribución de columna"><table><thead><tr><th>Desde</th><th>Hasta</th><th>Filas</th></tr></thead><tbody>{#each result.histogram as bin}<tr><td>{number(bin.lower)}</td><td>{number(bin.upper)}</td><td>{number(bin.count)}</td></tr>{/each}</tbody></table></div>
+   <div class="results-scroll" tabindex="0" role="region" aria-label="Distribución de columna"><table><thead><tr><th>Desde</th><th>Hasta</th><th>Filas</th></tr></thead><tbody>{#each result.histogram as bin}<tr><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(bin.lower)})}>{@render numeric(bin.lower)}</td><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(bin.upper)})}>{@render numeric(bin.upper)}</td><td title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(bin.count)})}>{@render numeric(bin.count,'','count')}</td></tr>{/each}</tbody></table></div>
   {:else if page==='correlation'}
-   {#if result.correlation}<dl aria-label="Correlación de Pearson"><div><dt>Pearson con {columnName(result.correlation.column)}</dt><dd>{number(result.correlation.value)}</dd></div><div><dt>Pares numéricos de la misma fila</dt><dd>{number(result.correlation.pairs)}</dd></div><div><dt>Filas omitidas</dt><dd>{number(result.correlation.omitted)}</dd></div></dl><p>Pearson mide asociación lineal; no demuestra causalidad.</p>{:else}<p>Elige una columna de comparación y vuelve a explorar.</p>{/if}
+   {#if result.correlation}<dl aria-label="Correlación de Pearson"><div><dt>Pearson con {columnName(result.correlation.column)}</dt><dd title={result.correlation.value===null?undefined:t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result.correlation.value!)})}>{@render numeric(result.correlation.value,'','coefficient')}</dd></div><div><dt>Pares numéricos de la misma fila</dt><dd title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result.correlation.pairs)})}>{@render numeric(result.correlation.pairs,'','count')}</dd></div><div><dt>Filas omitidas</dt><dd title={t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result.correlation.omitted)})}>{@render numeric(result.correlation.omitted,'','count')}</dd></div></dl><p>Pearson mide asociación lineal; no demuestra causalidad.</p>{:else}<p>Elige una columna de comparación y vuelve a explorar.</p>{/if}
   {/if}
   {#each result.warnings as warning}<p class="notice">{warning}</p>{/each}
  {/if}
- <p>Solo consulta. Vacíos incluye espacios y campos ausentes; repetidos distingue el texto exacto e incluye vacíos. Cálculos aproximados con punto decimal; se excluyen enteros fuera del rango seguro. Se conserva el texto original. Máximo 100 000 valores distintos por exploración. Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse.</p>
+ <p>{t('columnAnalysis.readonly')}</p>
+ <details><summary>{t('columnAnalysis.how')}</summary><p>{t('columnAnalysis.method')}</p></details>
 </section>
 <style>
  .column-explorer{padding:8px 0;font-size:11px}.column-explorer form,.views,.pagination{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.column-explorer label{display:flex;gap:6px;align-items:center}.option{margin:8px 0}.column-explorer select{max-width:240px}.column-explorer select,.column-explorer input[type=number],.column-explorer button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);padding:5px 8px;border-radius:var(--radius-control)}.column-explorer input[type=number]{width:65px}.column-explorer button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}.column-explorer button:disabled{opacity:.5}.column-explorer :focus-visible{outline:2px solid var(--accent);outline-offset:2px}.column-explorer p{color:var(--muted);line-height:1.5;margin:8px 0}.scope{font-weight:600}.notice{border-left:3px solid var(--accent);padding-left:8px}.column-explorer dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:8px 0}.column-explorer dl div{padding:6px;background:var(--input);border-radius:var(--radius-control)}.column-explorer dt{color:var(--muted)}.column-explorer dd{margin:4px 0 0;font-variant-numeric:tabular-nums}.results-scroll{max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius-control)}.results-scroll table{border-collapse:collapse;width:100%}.results-scroll th,.results-scroll td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}.results-scroll th{position:sticky;top:0;background:var(--panel)}.results-scroll pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:360px;margin:0;font-size:11px}.pagination{margin-top:8px}.column-explorer small{color:var(--muted)}.interpretation{border:1px solid var(--border);border-radius:6px;padding:0 10px 8px;margin:8px 0;background:var(--input)}.interpretation strong{color:var(--text)}.quality{font-variant-numeric:tabular-nums}

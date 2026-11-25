@@ -10,6 +10,8 @@ import type {LegacySettings,SettingsPatch,SettingsState} from './settings'
 import type {UpdateResult} from './updates'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
 import type {CalculateColumnEdit,CalculatedColumnPreview} from './calculated-column'
+import type {StatisticsResultRequest} from './statistics-result'
+export type {StatisticsResultRequest} from './statistics-result'
 export type {CalculatedColumnPreview} from './calculated-column'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
@@ -106,6 +108,7 @@ export interface FreyaAPI {
  analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>; cancelAnalysis(id:string,requestId:string):Promise<void>; cancelOpen(id:string):Promise<void>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  exportChartResult(id:string,request:ChartResultRequest):Promise<string|null>;
+ exportStatisticsResult(id:string,request:StatisticsResultRequest):Promise<string|null>;
  exportGraphic(id:string,request:GraphicExportRequest):Promise<string|null>;
  export(id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>;
  export(id:string,request:ExportRequest):Promise<ExportOutcome>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;

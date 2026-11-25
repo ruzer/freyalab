@@ -39,7 +39,10 @@ test('Revisión108 · truncado conserva cien barras en su orden y un solo aviso 
  expect(bars).toBe(100)
  const categories=(await panel().locator('.plot svg text').allTextContents()).filter(text=>/^C\d+$/.test(text))
  expect(categories[0]).toBe('C0');expect(categories).not.toContain('C841')
- await expect(panel().locator('.pivot-result tbody td').last()).not.toHaveText('0%')
+ const percentage=panel().locator('.pivot-result tbody td').last().locator('[data-analysis-value]')
+ await expect(percentage).toHaveAttribute('data-analysis-unit',' %')
+ expect(Number(await percentage.getAttribute('data-analysis-value'))).toBeGreaterThan(0)
+ await expect(percentage).toHaveText(/^\s*\+?(?=[\d.,\s]*[1-9])[\d.,\s]+%\s*$/)
  expect(await readFile(file,'utf8')).toBe(original)
 })
 

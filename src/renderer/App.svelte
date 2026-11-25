@@ -812,7 +812,7 @@
    {/if}
    {#each analyses as tab (tab.id)}
     {@const doc=documents.find(value=>value.id===tab.source.documentId)}
-    {#if doc}<AnalysisWorkspace {tab} {doc} shown={activeAnalysis?.id===tab.id} view={csvAnalysisViews.get(doc.id)??emptyCsvAnalysisView(doc)} external={external.includes(doc.id)} onsection={section=>analysisSection(tab.id,section)} onreturn={()=>void (doc.analysisSubset?returnToProject():returnToCsv(doc.id))} onempty={intent=>void openEmptyAction(doc.id,intent)} onerror={error} onreport={openStatisticsReport}/>{/if}
+    {#if doc}<AnalysisWorkspace {tab} {doc} numberMode={preferencesState.values.decimalesAnalisis} numberModeReadonly={preferencesState.readonly} onnumbermodechange={mode=>savePreferences({decimalesAnalisis:mode})} shown={activeAnalysis?.id===tab.id} view={csvAnalysisViews.get(doc.id)??emptyCsvAnalysisView(doc)} external={external.includes(doc.id)} onsection={section=>analysisSection(tab.id,section)} onreturn={()=>void (doc.analysisSubset?returnToProject():returnToCsv(doc.id))} onempty={intent=>void openEmptyAction(doc.id,intent)} onerror={error} onreport={openStatisticsReport}/>{/if}
    {/each}
   </main>
  </div>

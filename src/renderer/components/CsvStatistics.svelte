@@ -1,4 +1,6 @@
 <script lang="ts">
+ import AnalysisNumber from './AnalysisNumber.svelte'
+ import {formatAnalysisFullNumber,type AnalysisNumberMode} from '../../shared/analysis-number-format'
  import {t,formatNumber} from '../lib/i18n.svelte'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
@@ -6,13 +8,15 @@
  import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick,untrack} from 'svelte'
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
+ import {statisticsData} from '../lib/statistics-data'
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import type {CsvEmptyIntent} from '../lib/csv-analysis-view'
  import CsvDescribe from './CsvDescribe.svelte'
  import type {AnalysisStatistics} from '../lib/workspace-tabs'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport,onempty}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void}=$props()
+ let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport,onempty,numberMode='auto'}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
+ const countFields=new Set(['cells','empty','unique','numeric','missing','whitespace','excluded'])
  const titleId=$derived(embedded?'analysis-statistics-'+doc.id:'csv-statistics-title')
  $effect(()=>{if(inspection){explorationColumn=inspection.column;explorationScope=inspection.scope;exploring=true}})
  let exploring=$state(false),overviewing=$state(false),advancedOpen=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
@@ -57,16 +61,23 @@
   finally{if(ticket===request){active=undefined;busy=false}}
  }
  async function report(){if(!reportContext||busy||reporting||doc.revision!==revision)return;const text=statisticsReport($state.snapshot(reportContext),$state.snapshot(results));reporting=true;try{await onreport(text)}catch(error){onerror(String(error))}finally{reporting=false}}
+ async function exportData(format:'csv'|'json'){
+  if(exploring||overviewing||!reportContext||!results.length||busy||reporting||doc.revision!==revision)return
+  const captured=$state.snapshot(reportContext),data=statisticsData(captured,$state.snapshot(results))
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:captured.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
  export function exportActions():AnalysisExportAction[]{
   const current=exploring?explorer:describeView
-  return[...(!overviewing&&(exploring||!usingRange)?current?.exportActions():undefined)??[{label:t('describe.report'),disabledReason:'context' as const,run:()=>{}}],{label:t('describe.detailedReport'),disabledReason:exploring||overviewing?'context':busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null,run:report}]
+  const disabledReason=exploring||overviewing?'context':busy||reporting?'busy':!reportContext||!results.length?'result':doc.revision!==revision?'refresh':null
+  return[...(!overviewing&&(exploring||!usingRange)?current?.exportActions():undefined)??[{label:t('describe.report'),disabledReason:'context' as const,run:()=>{}}],{label:t('describe.detailedReport'),disabledReason,run:report},{label:t(usingRange?'analysis.export.csv':'statistics.export.detailedCsv'),disabledReason,title:t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t(usingRange?'analysis.export.json':'statistics.export.detailedJson'),disabledReason,run:()=>exportData('json')}]
  }
- function number(value:number|null){return value===null?'—':formatNumber(value,{maximumFractionDigits:2})}
 </script>
 <svelte:window onkeydown={event=>{if(!embedded&&event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section class="statistics-panel" aria-label={t('describe.workspace')}>
  <div class="statistics-heading"><h3 id={titleId} tabindex="-1" bind:this={heading}>{t('statistics.heading')}</h3>{#if !embedded}<button title={t('statistics.close')} aria-label={t('statistics.close')} onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
- <div class="describe-host" hidden={usingRange||exploring||overviewing}><CsvDescribe bind:this={describeView} bind:busy={describeBusy} externalExports={embedded} blocked={busy} shown={!usingRange&&!exploring&&!overviewing} {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport}/></div>
+ <div class="describe-host" hidden={usingRange||exploring||overviewing}><CsvDescribe {numberMode} bind:this={describeView} bind:busy={describeBusy} externalExports={embedded} blocked={busy} shown={!usingRange&&!exploring&&!overviewing} {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport}/></div>
  <details class="advanced-statistics" bind:open={advancedOpen}><summary>{t('describe.advanced')}</summary>
  <section class="legacy-statistics" aria-labelledby={titleId}>
  {#if !exploring&&!overviewing}
@@ -83,11 +94,11 @@
  {#if results.length||usingRange}<div class="statistics-scroll" class:reserved={usingRange} role="region" aria-label={t('statistics.results')}>{#if results.length}<table>
   <caption>{analyzedScope}{results[0]?.sample?' · '+t('statistics.sampleLimited'):''}</caption>
   <thead><tr>{#each [t('statistics.column'),...fields.map(([,label])=>label)] as title}<th scope="col">{title}</th>{/each}</tr></thead>
-  <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td title={result[key]===null?'':String(result[key])}>{number(result[key])}</td>{/each}</tr>{/each}</tbody>
+  <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td title={result[key]===null?'':t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result[key]!)})}>{#if result[key]===null}—{:else}<AnalysisNumber value={result[key]!} mode={numberMode} kind={countFields.has(key)?'count':'number'}/>{/if}</td>{/each}</tr>{/each}</tbody>
  </table>{:else}<p>{t('statistics.rangeEmpty')}</p>{/if}</div>{/if}
  {/if}
- {#if !overviewing}<details bind:open={exploring}><summary>{t(exploring?'statistics.back':'statistics.explore')}</summary>{#if exploring}<CsvColumnAnalysis bind:this={explorer} externalExports={embedded} {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
- {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{t(overviewing?'statistics.back':'statistics.overview')}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} {onempty} oninspect={inspectColumn}/>{/if}</details>{/if}
+ {#if !overviewing}<details bind:open={exploring}><summary>{t(exploring?'statistics.back':'statistics.explore')}</summary>{#if exploring}<CsvColumnAnalysis {numberMode} bind:this={explorer} externalExports={embedded} {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
+ {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{t(overviewing?'statistics.back':'statistics.overview')}</summary>{#if overviewing}<CsvColumnsOverview {numberMode} {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} {onempty} oninspect={inspectColumn}/>{/if}</details>{/if}
  {#if !exploring&&!overviewing}<details><summary>{t('statistics.how')}</summary>{#if revision>=0}<p>{t('describe.revision',{revision})}</p>{/if}<p class="statistics-note">{t('statistics.note')}</p></details>{/if}
  </section></details>
 </section>

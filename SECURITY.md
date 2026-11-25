@@ -38,3 +38,11 @@ Las confirmaciones de todos los documentos preceden a su disposición. Durante e
 Las operaciones de resultados reciben ids validados; el renderer no proporciona la ruta de exportación. Main resuelve el proyecto y rechaza destinos fuera de él, fuentes protegidas, exportaciones registradas, documentos abiertos y enlaces simbólicos. Revalida el contexto al preparar una fuente y la identidad del padre antes de crear o publicar el archivo; el temporal queda en la raíz del proyecto para poder limpiarlo si cambia la carpeta de destino. No modifica la fuente original ni reemplaza una exportación registrada.
 
 Estas comprobaciones usan rutas y las API portables de Node. No equivalen a una garantía de confinamiento atómica del kernel frente a un proceso local que sustituya directorios entre la última comprobación y el syscall; ese límite TOCTOU se conserva explícito. El registro del manifiesto y la creación del archivo son dos fases: un fallo del registro conserva el archivo y ofrece reintentar tras verificar su huella. No se promete una transacción de ambos archivos.
+
+## Exportación de estadísticas
+
+`exportStatisticsResult` usa el puente fijo existente y una petición estricta de matriz y contexto. No recibe rutas, contenido libre de archivos ni operaciones SQL. Se acotan filas, columnas, campos, números finitos y tamaño agregado antes de construir CSV/JSON. El contexto incluye si la vista es parcial; el origen y la cobertura de conjuntos se obtienen del documento registrado en Main.
+
+Main revalida identidad, revisión, ruta y encabezados antes y durante la escritura, y reutiliza `exportResult`: selector nativo, protección de fuentes/proyectos/enlaces, escritura atómica y pareja CSV/contexto con reserva y recuperación. Solo el CSV puede proteger texto interpretable como fórmula; los números negativos siguen siendo números y el JSON conserva los valores originales y los nulos.
+
+El snapshot de resultados procede de la interfaz y no se recalcula ni se autentica matemáticamente en Main. El esquema valida su estructura y límites; los tests verifican la correspondencia con resultados e informes. La interfaz carece de acceso genérico a disco, Node o rutas de destino.

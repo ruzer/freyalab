@@ -1,0 +1,460 @@
+
+Running 13 tests using 1 worker
+
+(node:81707) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [shell] › tests/e2e/project-source.spec.ts:135:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (17.5s)
+(node:81940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [shell] › tests/e2e/ui.spec.ts:510:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance (16.1s)
+(node:82075) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 [shell] › tests/e2e/ui.spec.ts:541:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf (16.5s)
+(node:82170) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración (18.1s)
+(node:82436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 [csv] › tests/e2e/analysis-tab.spec.ts:117:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar (16.5s)
+(node:82731) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [csv] › tests/e2e/chart-clarity.spec.ts:192:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID (20.1s)
+(node:89189) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.2s)
+  ✓   8 [csv] › tests/e2e/charts.spec.ts:69:1 › gráficos visuales: temas y tabla accesible (3.3s)
+  ✘   9 [csv] › tests/e2e/charts.spec.ts:160:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (20.4s)
+(node:89442) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 [csv] › tests/e2e/charts.spec.ts:273:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros (22.7s)
+(node:89697) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 [csv] › tests/e2e/charts.spec.ts:294:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla (19.5s)
+(node:89988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  12 [csv] › tests/e2e/charts.spec.ts:321:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (18.7s)
+(node:90150) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  13 [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado (19.8s)
+
+
+  1) [shell] › tests/e2e/project-source.spec.ts:135:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope')
+    Expected substring: "Documento completo"
+    Received string:    "ID · documento completo · 1 fila"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope')
+        33 × locator resolved to <p class="scope svelte-rmw2lu">ID · documento completo · 1 fila</p>
+           - unexpected value "ID · documento completo · 1 fila"
+
+
+      176 |  await profile.getByRole('button',{name:'Explorar columna',exact:true}).click()
+      177 |  await expect(profile.getByRole('status')).toHaveText('Exploración completa.')
+    > 178 |  await expect(profile.locator('.scope')).toContainText('Documento completo')
+          |                                          ^
+      179 |  await exportAnalysis(page,'describe.report')
+      180 |  const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
+      181 |  expect(report.text).toContain('Documento completo')
+        at <worktree>/tests/e2e/project-source.spec.ts:178:42
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/attachments/electron-context-e3caf9d9ff4d991e3a92ea5d9d5f95d25cdc8c44.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [shell] › tests/e2e/ui.spec.ts:510:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: 'Exploración de columna', exact: true })
+    Expected substring: "Documento completo · 8 filas · revisión 0"
+    Received string:    "Columna 1. Valor2. Doble3. Código Filas Documento completoVista filtrada Explorar columna   Exploración completa.  PerfilFrecuenciasDistribuciónCorrelación    Valor · documento completo · 8 filas Tipo probable: NuméricoLos 8 valores con contenido son números utilizables. Esto no confirma que deban sumarse ni cambia su formato.Con contenido: 8 · Campos ausentes: 0 · Campos vacíos exactos: 0 · Solo espacios: 0Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan. Filas8Vacíos0Campos ausentes0Solo espacios0Valores distintos exactos5Grupos repetidos2Filas en grupos repetidos5Repeticiones adicionales3Numéricos utilizables8No numéricos o fuera del rango seguro0Con ceros iniciales0Longitud mínima1Longitud máxima1Suma40Media5Mediana4.5Mínimo2Máximo9Desviación poblacional (n)2Desviación muestral (n−1)2.14 Varianza y percentilesLa varianza mide la dispersión respecto a la media, en unidades al cuadrado. La poblacional divide entre n; la muestral entre n−1 y necesita al menos dos números. Los percentiles ayudan a ubicar valores en la distribución: P25 es una referencia para el 25 % inferior de los números y P75 para el 75 %. Se usa interpolación lineal (tipo 7), posición (n−1)×p con índices desde 0; P50 coincide con la mediana. Vacíos, textos y enteros fuera del rango seguro no participan. — indica que faltan valores o que el resultado no es representable.Varianza poblacional (n)4Varianza muestral (n−1)4.57P10 (percentil 10)3.4P25 (percentil 25)4P75 (percentil 75)5.5P90 (percentil 90)7.6   Solo lectura: tu archivo no cambia. Cómo se calculaVacíos incluye espacios y campos ausentes; repetidos distingue el texto exacto e incluye vacíos. Cálculos aproximados con punto decimal; se excluyen enteros fuera del rango seguro. Se conserva el texto original. Máximo 100 000 valores distintos por exploración. Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: 'Exploración de columna', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Exploración de columna', exact: true })
+        33 × locator resolved to <section aria-label="Exploración de columna" class="column-explorer svelte-rmw2lu">…</section>
+           - unexpected value "Columna 1. Valor2. Doble3. Código Filas Documento completoVista filtrada Explorar columna   Exploración completa.  PerfilFrecuenciasDistribuciónCorrelación    Valor · documento completo · 8 filas Tipo probable: NuméricoLos 8 valores con contenido son números utilizables. Esto no confirma que deban sumarse ni cambia su formato.Con contenido: 8 · Campos ausentes: 0 · Campos vacíos exactos: 0 · Solo espacios: 0Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan. Filas8Vacíos0Campos ausentes0Solo espacios0Valores distintos exactos5Grupos repetidos2Filas en grupos repetidos5Repeticiones adicionales3Numéricos utilizables8No numéricos o fuera del rango seguro0Con ceros iniciales0Longitud mínima1Longitud máxima1Suma40Media5Mediana4.5Mínimo2Máximo9Desviación poblacional (n)2Desviación muestral (n−1)2.14 Varianza y percentilesLa varianza mide la dispersión respecto a la media, en unidades al cuadrado. La poblacional divide entre n; la muestral entre n−1 y necesita al menos dos números. Los percentiles ayudan a ubicar valores en la distribución: P25 es una referencia para el 25 % inferior de los números y P75 para el 75 %. Se usa interpolación lineal (tipo 7), posición (n−1)×p con índices desde 0; P50 coincide con la mediana. Vacíos, textos y enteros fuera del rango seguro no participan. — indica que faltan valores o que el resultado no es representable.Varianza poblacional (n)4Varianza muestral (n−1)4.57P10 (percentil 10)3.4P25 (percentil 25)4P75 (percentil 75)5.5P90 (percentil 90)7.6   Solo lectura: tu archivo no cambia. Cómo se calculaVacíos incluye espacios y campos ausentes; repetidos distingue el texto exacto e incluye vacíos. Cálculos aproximados con punto decimal; se excluyen enteros fuera del rango seguro. Se conserva el texto original. Máximo 100 000 valores distintos por exploración. Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse."
+
+
+      517 |  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.')
+      518 |  await expect(explorer.getByLabel('Perfil de columna').locator('dt').filter({hasText:/^Mediana$/}).locator('..').locator('dd')).toHaveText(/4[.,]5/)
+    > 519 |  await expect(explorer).toContainText('Documento completo · 8 filas · revisión 0')
+          |                         ^
+      520 |  await explorer.getByRole('button',{name:'Frecuencias',exact:true}).click()
+      521 |  const frequencies=explorer.getByRole('region',{name:'Frecuencias de columna',exact:true})
+      522 |  const counts=await frequencies.locator('tbody tr').first().locator('td').allTextContents();expect(counts.slice(0,2)).toEqual(['"4"','3']);expect(counts[2]).toMatch(/^37[.,]5 %$/);expect(counts[3]).toBe('2')
+        at <worktree>/tests/e2e/ui.spec.ts:519:25
+
+    Error Context: test-results/ui-exploración-CSV-perfil--9b3c2-n-conservan-datos-y-alcance-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/ui-exploración-CSV-perfil--9b3c2-n-conservan-datos-y-alcance-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/ui-exploración-CSV-perfil--9b3c2-n-conservan-datos-y-alcance-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [shell] › tests/e2e/ui.spec.ts:541:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: 'Exploración de columna', exact: true })
+    Expected substring: "Muestra limitada · 200 filas"
+    Received string:    "Columna 1. Valor Filas Muestra completaVista de la muestra Explorar columna   Exploración completa. Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo. PerfilFrecuenciasDistribuciónCorrelación    Valor · muestra limitada · 200 filas Tipo probable: NuméricoLos 200 valores con contenido son números utilizables. Esto no confirma que deban sumarse ni cambia su formato.Con contenido: 200 · Campos ausentes: 0 · Campos vacíos exactos: 0 · Solo espacios: 0Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan. Filas200Vacíos0Campos ausentes0Solo espacios0Valores distintos exactos1Grupos repetidos1Filas en grupos repetidos200Repeticiones adicionales199Numéricos utilizables200No numéricos o fuera del rango seguro0Con ceros iniciales0Longitud mínima1Longitud máxima1Suma400Media2Mediana2Mínimo2Máximo2Desviación poblacional (n)0Desviación muestral (n−1)0 Varianza y percentilesLa varianza mide la dispersión respecto a la media, en unidades al cuadrado. La poblacional divide entre n; la muestral entre n−1 y necesita al menos dos números. Los percentiles ayudan a ubicar valores en la distribución: P25 es una referencia para el 25 % inferior de los números y P75 para el 75 %. Se usa interpolación lineal (tipo 7), posición (n−1)×p con índices desde 0; P50 coincide con la mediana. Vacíos, textos y enteros fuera del rango seguro no participan. — indica que faltan valores o que el resultado no es representable.Varianza poblacional (n)0Varianza muestral (n−1)0P10 (percentil 10)2P25 (percentil 25)2P75 (percentil 75)2P90 (percentil 90)2   Solo lectura: tu archivo no cambia. Cómo se calculaVacíos incluye espacios y campos ausentes; repetidos distingue el texto exacto e incluye vacíos. Cálculos aproximados con punto decimal; se excluyen enteros fuera del rango seguro. Se conserva el texto original. Máximo 100 000 valores distintos por exploración. Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: 'Exploración de columna', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Exploración de columna', exact: true })
+        33 × locator resolved to <section aria-label="Exploración de columna" class="column-explorer svelte-rmw2lu">…</section>
+           - unexpected value "Columna 1. Valor Filas Muestra completaVista de la muestra Explorar columna   Exploración completa. Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo. PerfilFrecuenciasDistribuciónCorrelación    Valor · muestra limitada · 200 filas Tipo probable: NuméricoLos 200 valores con contenido son números utilizables. Esto no confirma que deban sumarse ni cambia su formato.Con contenido: 200 · Campos ausentes: 0 · Campos vacíos exactos: 0 · Solo espacios: 0Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan. Filas200Vacíos0Campos ausentes0Solo espacios0Valores distintos exactos1Grupos repetidos1Filas en grupos repetidos200Repeticiones adicionales199Numéricos utilizables200No numéricos o fuera del rango seguro0Con ceros iniciales0Longitud mínima1Longitud máxima1Suma400Media2Mediana2Mínimo2Máximo2Desviación poblacional (n)0Desviación muestral (n−1)0 Varianza y percentilesLa varianza mide la dispersión respecto a la media, en unidades al cuadrado. La poblacional divide entre n; la muestral entre n−1 y necesita al menos dos números. Los percentiles ayudan a ubicar valores en la distribución: P25 es una referencia para el 25 % inferior de los números y P75 para el 75 %. Se usa interpolación lineal (tipo 7), posición (n−1)×p con índices desde 0; P50 coincide con la mediana. Vacíos, textos y enteros fuera del rango seguro no participan. — indica que faltan valores o que el resultado no es representable.Varianza poblacional (n)0Varianza muestral (n−1)0P10 (percentil 10)2P25 (percentil 25)2P75 (percentil 75)2P90 (percentil 90)2   Solo lectura: tu archivo no cambia. Cómo se calculaVacíos incluye espacios y campos ausentes; repetidos distingue el texto exacto e incluye vacíos. Cálculos aproximados con punto decimal; se excluyen enteros fuera del rango seguro. Se conserva el texto original. Máximo 100 000 valores distintos por exploración. Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse."
+
+
+      554 |  const sample=join(directory,'muestra-exploracion.csv');await writeFile(sample,'Valor\n'+'2\n'.repeat(250));await truncate(sample,50*1024*1024+1);await page.evaluate(path=>window.freya.openPaths([path]),sample)
+      555 |  await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
+    > 556 |  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Muestra limitada · 200 filas');await expect(explorer).toContainText('no el archivo completo')
+          |                                                                                                         ^
+      557 | })
+      558 |
+      559 |
+        at <worktree>/tests/e2e/ui.spec.ts:556:105
+
+    Error Context: test-results/ui-exploración-CSV-paginac-da949-ción-muestra-e-IPC-inválido-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/ui-exploración-CSV-paginac-da949-ción-muestra-e-IPC-inválido-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/ui-exploración-CSV-paginac-da949-ción-muestra-e-IPC-inválido-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tfoot')
+    Expected substring: "36.666"
+    Received string:    "Total (recalculado)36.67"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tfoot') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tfoot')
+        27 × locator resolved to <tfoot class="svelte-1wo6u31">…</tfoot>
+           - unexpected value "Total (recalculado)36.67"
+
+
+       99 |  await suggestion.click();await chartAssign(page,'Valor','values');await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum');await expect(panel.locator('.pivot-result tfoot')).toContainText('110')
+      100 |  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')
+    > 101 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')
+          |                                                     ^
+      102 |  await expect(analysis().locator('header').getByRole('button',{name:'Exportar',exact:true})).toBeVisible()
+      103 |  await openChartSettings(page);await panel.getByText('Configuraciones guardadas',{exact:true}).click()
+      104 |  await panel.getByLabel('Nombre de configuración del gráfico').fill('Mi gráfico')
+        at <worktree>/tests/e2e/analysis-tab.spec.ts:101:53
+
+    Error Context: test-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/analysis-tab.spec.ts:117:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope')
+    Expected substring: "Vista filtrada · 2 filas"
+    Received string:    "Valor · vista filtrada · 2 filas"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('region', { name: 'Exploración de columna', exact: true }).locator('.scope')
+        34 × locator resolved to <p class="scope svelte-rmw2lu">Valor · vista filtrada · 2 filas</p>
+           - unexpected value "Valor · vista filtrada · 2 filas"
+
+
+      136 |  await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view')
+      137 |  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click()
+    > 138 |  await expect(explorer.locator('.scope')).toContainText('Vista filtrada · 2 filas')
+          |                                           ^
+      139 |  await analysis().getByText('Volver a estadísticas generales',{exact:true}).click()
+      140 |  await analysis().getByLabel('Columnas para estadísticas',{exact:true}).selectOption('range')
+      141 |  await button('Analizar').click()
+        at <worktree>/tests/e2e/analysis-tab.spec.ts:138:43
+
+    Error Context: test-results/analysis-tab-AN-1a-reutili-6e398-da-los-resultados-al-editar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-tab-AN-1a-reutili-6e398-da-los-resultados-al-editar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-tab-AN-1a-reutili-6e398-da-los-resultados-al-editar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [csv] › tests/e2e/chart-clarity.spec.ts:192:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tbody tr')
+    Timeout: 15000ms
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "2026-014,801,600100%",
+    +   "2026-014,801,600100 %",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result tbody tr')
+        34 × locator resolved to 1 element
+
+
+      202 |  const total=records.reduce((sum,row)=>sum+Number(row[1]),0);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total.toLocaleString('es-MX'))
+      203 |  await settings().getByLabel('Columna X del gráfico',{exact:true}).selectOption('2');await settings().getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('month');await generate.click();await ready()
+    > 204 |  await expect(panel().locator('.pivot-result tbody tr')).toHaveText([`2026-01${total.toLocaleString('es-MX')}100%`])
+          |                                                          ^
+      205 |  await settings().getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('none');await generate.click();await ready();await expect(panel().locator('.pivot-result tbody tr')).toHaveCount(5)
+      206 |  const json=JSON.parse((await exportFile('analysis.export.json','manual.analisis.json')).toString('utf8'))
+      207 |  expect(json.metadata.configuration.options).toMatchObject({x:2,y:1,measureType:'number',aggregate:'sum',time:'none'})
+        at <worktree>/tests/e2e/chart-clarity.spec.ts:204:58
+
+    Error Context: test-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [csv] › tests/e2e/charts.spec.ts:160:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+    Expected: "A110.0"
+    Received: "A110"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+        34 × locator resolved to <tr>…</tr>
+           - unexpected value "A110"
+
+
+      169 |  await showPanel(page,'Gráficos');const charts=chartPanel(page)
+      170 |  await chartType(page,'bar' as ChartOptions['kind']);await y(Number('2'));await charts.getByLabel('Tipo de medida del gráfico').selectOption('number');await aggregate().selectOption('sum');await charts.getByLabel('Alcance del gráfico').selectOption('filtered');await expect(charts.getByLabel('Configuración del gráfico',{exact:true})).toContainText('Suma de Y por Grupo');await expect(charts.locator('.result-status')).toContainText('Solo filas filtradas')
+    > 171 |  await finishChart();await expect(charts.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await openChartData(page);await expect(charts.locator('.chart-info .table-scroll tbody tr')).toHaveText('A110.0');await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect(charts.locator('.chart-result>.result-announcement')).toContainText('plots.svg');const svg=await readFile(join(folder,'exports','plots.svg'),'utf8');expect(svg).toContain('Suma de Y por Grupo');expect(svg).toContain('Vista filtrada actual')
+          |                                                                                                                                                                                                                                             ^
+      172 |  await showTable(page);await page.getByLabel('Filtrar Grupo',{exact:true}).fill('B');await showPanel(page,'Gráficos');await expect(charts.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await waitChartResult(page);await finishChart();await expect(charts.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(charts.locator('.chart-info .table-scroll tbody tr')).toHaveText('B12.0')
+      173 |  await charts.getByLabel('Alcance del gráfico').selectOption('all');await finishChart();await expect(charts.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(charts.locator('.chart-info .table-scroll tbody tr')).toHaveCount(3)
+      174 |  await charts.getByLabel('Tipo de medida del gráfico').selectOption('text');await expect(aggregate()).toHaveValue('count')
+        at <worktree>/tests/e2e/charts.spec.ts:171:237
+
+    Error Context: test-results/charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [csv] › tests/e2e/charts.spec.ts:273:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+    Expected: "202640.0A"
+    Received: "202640A"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+        33 × locator resolved to <tr>…</tr>
+           - unexpected value "202640A"
+
+
+      285 |  await expect(panel.getByLabel('Alcance del gráfico')).toBeEnabled()
+      286 |  await finishChart();await showPanel(page,'Gráficos');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveCount(3);await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('Fechas no válidas/vacías/ausentes: 0')
+    > 287 |  await panel.getByLabel('Agrupación temporal del gráfico').selectOption('year');await panel.locator('.chart-info>summary').click();await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText('202640.0A')
+          |                                                                                                                                                                                                                                                                                                                                                   ^
+      288 |  await applyLegacyChartPreset(page,doc,{headers:doc.headers!,options:{...options,kind:'scatter',x:0,y:1,bins:10,aggregate:'count',measureType:'number',series:2,time:'none'},where:{conditions:[],filterMode:'all'},view:{filters:{2:'A'}}},'Legado: puntos de fecha sin agrupar');await panel.getByLabel('Alcance del gráfico').selectOption('filtered');await expect(panel.getByLabel('Agrupación temporal del gráfico')).toHaveCount(0);await applyLegacyChartPreset(page,doc,{headers:doc.headers!,options:{...options,kind:'line',x:0,y:1,bins:10,aggregate:'count',measureType:'number',series:2,time:'none'},where:{conditions:[],filterMode:'all'},view:{filters:{2:'A'}}},'Legado: líneas de fecha sin agrupar');await panel.getByLabel('Alcance del gráfico').selectOption('filtered');await expect(panel.getByLabel('Agrupación temporal del gráfico')).toHaveValue('none');expect(await readFile(path,'utf8')).toBe(content);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
+      289 |  const invalid=await open('Fecha,Total\nincorrecta,1\n,2\n','invalid-dates.csv');await showPanel(page,'Gráficos')
+      290 |  // Compatibilidad: preset temporal legado válido; no se presenta como agrupación construible sobre un perfil sin fechas.
+        at <worktree>/tests/e2e/charts.spec.ts:287:339
+
+    Error Context: test-results/charts-constructor-tempora-049cf-on-nombres-y-alcance-claros-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-constructor-tempora-049cf-on-nombres-y-alcance-claros-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-constructor-tempora-049cf-on-nombres-y-alcance-claros-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [csv] › tests/e2e/charts.spec.ts:294:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+    Timeout: 15000ms
+    - Expected  - 3
+    + Received  + 3
+
+      Array [
+    -   "B5.0",
+    -   "C5.0",
+    -   "A104.0",
+    +   "B5",
+    +   "C5",
+    +   "A104",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+        34 × locator resolved to 3 elements
+
+
+      300 |  filterReturn=await openFilters();await expect(filterEditor.getByLabel('Valor de condición 1',{exact:true})).toHaveValue('');await expect(panel.getByRole('region',{name:'Filtros',exact:true}).locator('.chip')).toHaveCount(0);await filterEditor.getByLabel('Combinar condiciones').selectOption('any')
+      301 |  for(const [i,column,op,value] of [[1,'3','equals','U'],[2,'2','greater','50']] as const){if(i>1)await filterEditor.getByRole('button',{name:'Añadir condición',exact:true}).click();await filterEditor.getByLabel(`Columna de condición ${i}`,{exact:true}).selectOption(column);await filterEditor.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption(op);await filterEditor.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}
+    > 302 |  await filterEditor.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click();await expect(filterReturn).toBeFocused();await y(Number('2'));await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await aggregate().selectOption('sum');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('Documento completo · Filtros del gráfico: 2 (O)');await panel.locator('.chart-info>summary').click();await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('6 filas');await panel.locator('.chart-info>summary').click();await openChartData(page);await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['B5.0','C5.0','A104.0'])
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^
+      303 |  await panel.getByLabel('Alcance del gráfico').selectOption('filtered');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['B5.0','A104.0']);await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('5 filas')
+      304 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await panel.locator('.chart-info>summary').click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('plots.svg');const svg=await readFile(join(folder,'exports','plots.svg'),'utf8');expect(svg).toContain('Filtros del gráfico: 2 (O)');expect(svg).toContain('Vista filtrada actual')
+      305 |  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.locator('.plot').scrollIntoViewIfNeeded();await page.screenshot({path:test.info().outputPath(`local-filters-${theme}-${width}.png`)})}
+        at <worktree>/tests/e2e/charts.spec.ts:302:866
+
+    Error Context: test-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [csv] › tests/e2e/charts.spec.ts:321:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+    Timeout: 15000ms
+    - Expected  - 2
+    + Received  + 2
+
+      Array [
+    -   "A103.0U",
+    -   "A4.0V",
+    +   "A103U",
+    +   "A4V",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info .table-scroll tbody tr')
+        34 × locator resolved to 2 elements
+
+
+      326 |  await openFilters(1);const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Columna de condición 1').selectOption('1');await filters.getByLabel('Operador de condición 1').selectOption('greater');await filters.getByLabel('Valor de condición 1').fill('2');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
+      327 |  await panel.getByText('Configuraciones guardadas',{exact:true}).click();await panel.getByLabel('Nombre de configuración del gráfico').fill('Ventas A');await panel.getByRole('button',{name:'Guardar configuración',exact:true}).click();await expect(panel.getByLabel('Estado de configuraciones')).toContainText('Configuración guardada');const [saved]=await page.evaluate(()=>window.freya.chartPresets());expect(saved.configuration.view).toEqual({filters:{0:'A'},search:'',conditions:[],filterMode:'all'});expect(saved.configuration.options).toMatchObject({y:2,aggregate:'sum',series:3})
+    > 328 |  await showTable(page);await page.getByLabel('Filtrar Grupo',{exact:true}).fill('B');await showPanel(page,'Gráficos');await expect(page.getByRole('grid',{name:'Tabla de datos',includeHidden:true})).toHaveAttribute('aria-rowcount','5');await panel.getByRole('button',{name:'Aplicar configuración',exact:true}).click();await expect(panel.getByLabel('Alcance del gráfico')).toHaveValue('saved');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await openChartData(page);await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['A103.0U','A4.0V']);await expect(page.getByRole('grid',{name:'Tabla de datos',includeHidden:true})).toHaveAttribute('aria-rowcount','5');expect(await page.evaluate(()=>window.freya.documents())).toEqual(before)
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^
+      329 |  await app.evaluate(({app})=>app.exit(0));await app.close().catch(()=>{});await launch();panel=chartPanel(page);await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('tab',{name:doc.name,exact:true})).toHaveAttribute('aria-selected','true');await showPanel(page,'Gráficos');await panel.getByText('Configuraciones guardadas',{exact:true}).click();await panel.getByLabel('Configuración guardada del gráfico').selectOption(saved.id);await panel.getByRole('button',{name:'Aplicar configuración',exact:true}).focus();await page.keyboard.press('Enter');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await openChartData(page);await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['A103.0U','A4.0V']);expect(await readFile(path,'utf8')).toBe(original)
+      330 |  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.locator('.presets').scrollIntoViewIfNeeded();await page.screenshot({path:test.info().outputPath(`presets-${theme}-${width}.png`)})}
+      331 |  await panel.getByRole('button',{name:'Eliminar configuración elegida',exact:true}).click();await expect(panel.getByLabel('Estado de configuraciones')).toContainText('eliminada');expect(await page.evaluate(()=>window.freya.chartPresets())).toEqual([]);expect(await readFile(path,'utf8')).toBe(original)
+        at <worktree>/tests/e2e/charts.spec.ts:328:626
+
+    Error Context: test-results/charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result table').locator('tfoot')
+    Expected substring: "100%"
+    Received string:    "Total2,8004,4007,200100 %"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result table').locator('tfoot') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.pivot-result table').locator('tfoot')
+        34 × locator resolved to <tfoot class="svelte-1wo6u31">…</tfoot>
+           - unexpected value "Total2,8004,4007,200100 %"
+
+
+      43 |  const panel=await configureSum(),table=panel.locator('.pivot-result table')
+      44 |  await expect(table.locator('tbody tr')).toHaveCount(4)
+    > 45 |  await expect(table.locator('tfoot')).toContainText('4,400');await expect(table.locator('tfoot')).toContainText('2,800');await expect(table.locator('tfoot')).toContainText('7,200');await expect(table.locator('tfoot')).toContainText('100%')
+         |                                                                                                                                                                                                                           ^
+      46 |  await expect(table.getByRole('columnheader',{name:'% del total',exact:true})).toBeVisible()
+      47 |  const types=panel.getByRole('group',{name:'Formas de visualizar',exact:true});await expect(types.getByRole('button')).toHaveCount(6)
+      48 |  await (await chartTypeButton(page,'heatmap')).focus();await page.keyboard.press('Enter');await expect((await chartTypeButton(page,'heatmap'))).toHaveAttribute('aria-pressed','true')
+        at <worktree>/tests/e2e/csv-summary.spec.ts:45:219
+
+    Error Context: test-results/csv-summary-F2a-suma-por-s-00331-pos-alcanzables-con-teclado-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/csv-summary-F2a-suma-por-s-00331-pos-alcanzables-con-teclado-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/csv-summary-F2a-suma-por-s-00331-pos-alcanzables-con-teclado-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11 failed
+    [shell] › tests/e2e/project-source.spec.ts:135:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+    [shell] › tests/e2e/ui.spec.ts:510:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance
+    [shell] › tests/e2e/ui.spec.ts:541:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf
+    [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración
+    [csv] › tests/e2e/analysis-tab.spec.ts:117:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar
+    [csv] › tests/e2e/chart-clarity.spec.ts:192:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID
+    [csv] › tests/e2e/charts.spec.ts:160:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones
+    [csv] › tests/e2e/charts.spec.ts:273:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros
+    [csv] › tests/e2e/charts.spec.ts:294:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla
+    [csv] › tests/e2e/charts.spec.ts:321:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV
+    [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado
+  2 passed (3.6m)

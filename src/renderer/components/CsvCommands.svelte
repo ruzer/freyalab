@@ -3,6 +3,7 @@
 </script>
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
+ import {plural} from '../lib/i18n.svelte'
  import Icon from './Icon.svelte'
  import {onMount} from 'svelte'
  let {commands,context,onexecute,onclose}:{commands:CsvCommand[];context:string;onexecute:(id:string)=>void;onclose:()=>void}=$props()
@@ -24,7 +25,7 @@
  <div class="heading"><h3 id="csv-commands-title">Comandos CSV</h3><button title={"Cerrar comandos CSV"} aria-label="Cerrar comandos CSV" onclick={onclose}><Icon name="x" size={14}/></button></div>
  <p>{context}</p>
  <label>Buscar herramienta<input type="search" aria-label="Buscar comando CSV" placeholder="Buscar, reemplazar, filtrar, duplicar…" bind:value={search}/></label>
- <p role="status">{matches.length} comandos encontrados. Las acciones deshabilitadas necesitan otro contexto.</p>
+ <p role="status">{plural('csvCommands.matches',matches.length)}</p>
  <ul class="command-list">{#each matches as command (command.id)}
   {@const hint=command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-command-reason-'+command.id}:controlHint(command.disabled?'context':null)}
   <li><button {...hint} aria-label={command.disabledReason?command.label:undefined} disabled={command.disabled} onclick={()=>onexecute(command.id)}><strong>{command.label}</strong><small id={command.disabledReason?'csv-command-reason-'+command.id:undefined}>{command.disabledReason??command.detail}</small></button></li>

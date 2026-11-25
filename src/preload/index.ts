@@ -66,6 +66,7 @@ const api:FreyaAPI={
  tablePage:(id,query)=>invoke('page',id,query),tableEdit:(id,edit)=>invoke('edit',id,edit),tableOptions:(id,options)=>invoke('options',id,options),undo:(id,redo)=>invoke('undo',id,redo),stats:(id,rows,columns,options)=>invoke('stats',id,rows,columns,options),tableMarkdown:(id,options)=>invoke('markdown',id,options),
  tableViewStart:(id,request)=>invoke('viewStart',id,request),tableViewState:id=>invoke('viewState',id),tableViewCancel:(id,requestId)=>invoke('viewCancel',id,requestId),tableViewClear:id=>invoke('viewClear',id),
  exportChartResult:(id,request)=>invoke('exportChartResult',id,request),
+ exportStatisticsResult:(id,request)=>invoke('exportStatisticsResult',id,request),
  exportGraphic:(id,request)=>invoke('exportGraphic',id,request),
  bibliography:(id,source)=>invoke('bibliography',id,source),
  pandocStatus:()=>invoke('pandocStatus'),pandocChoose:()=>invoke('pandocChoose'),pandocTest:()=>invoke('pandocTest'),

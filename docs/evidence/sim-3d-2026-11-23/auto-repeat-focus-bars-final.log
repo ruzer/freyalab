@@ -1,0 +1,45 @@
+
+Running 20 tests using 1 worker
+
+(node:10193) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (2.0s)
+  ✓   2 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.4s)
+(node:10257) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.5s)
+  ✓   4 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.4s)
+(node:10314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.6s)
+  ✓   6 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+(node:10423) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.3s)
+  ✓   8 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.4s)
+(node:10483) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.4s)
+  ✓  10 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+(node:10534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.5s)
+  ✓  12 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.6s)
+(node:10608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.4s)
+  ✓  14 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.2s)
+(node:10660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  15 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.4s)
+  ✓  16 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+(node:10744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.4s)
+  ✓  18 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+(node:10809) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.6s)
+  ✓  20 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+
+  20 passed (1.2m)

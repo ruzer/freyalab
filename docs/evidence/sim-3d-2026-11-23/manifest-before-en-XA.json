@@ -1,0 +1,142 @@
+{
+  "phase": "before",
+  "language": "en-XA",
+  "sourceHeadReportedByRunner": "3b5e822ce9835b16e35f3de0b89fe8496a7dc19f",
+  "buildEntryFile": "index.js",
+  "buildEntrySHA256": "808a38467b4d99f81ad2f8edfd4f8300a65f0ec50f3c5679370b95c7558f6167",
+  "buildUnchanged": true,
+  "sourceFiles": [
+    {
+      "name": "precision.csv",
+      "bytes": 37,
+      "sha256": "3decba13016bd6024ad7babb3bdec4d8410ff670f7a4833a290b39e9d5537748"
+    },
+    {
+      "name": "datos.csv",
+      "bytes": 263,
+      "sha256": "2134604359eb3e13880be470a8d19e8a0248578c4ebbbcf8f5eccb50a41ed8f1"
+    }
+  ],
+  "images": [
+    {
+      "path": "before-precision-en-XA-light-1440x900.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 143610,
+      "sha256": "945ba860189280e1ff738dfc2c76559868bbae5802150aeae51ddd80455368d1"
+    },
+    {
+      "path": "before-precision-en-XA-light-1280x720.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 124210,
+      "sha256": "16e7c4561295b11589c22dabdbd8312a07179750bf4d23213282cb122d619adb"
+    },
+    {
+      "path": "before-precision-en-XA-dark-1440x900.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 141434,
+      "sha256": "47d2bb4c8514934de43992cf475d19f1ed9af31e7917ebd6b154c5fd7fdfb514"
+    },
+    {
+      "path": "before-precision-en-XA-dark-1280x720.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 122339,
+      "sha256": "a392766eb44a57c9bae797f9b6ffd0469fd67632ebb9786b150b411af23da9b3"
+    },
+    {
+      "path": "before-frequencies-en-XA-light-1440x900.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 128419,
+      "sha256": "2cfa8aac14bcdb947c4e3a8476d5c28b0c7201c09964cc0622c83a5cb3e9ba96"
+    },
+    {
+      "path": "before-frequencies-en-XA-light-1280x720.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 124046,
+      "sha256": "092f04e2a84ffaac141d4210d8bc8e960d523421c262bf3323b95ff875fcdf60"
+    },
+    {
+      "path": "before-frequencies-en-XA-dark-1440x900.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 127640,
+      "sha256": "4fba796fac531ac7fa8f7c4d9fdfbd23422ed56228335046f6f0ccdd1e8db800"
+    },
+    {
+      "path": "before-frequencies-en-XA-dark-1280x720.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 123320,
+      "sha256": "0de8b11c9e419682542bcb997b9bb28ae6a086acbb50af46f5300710dd1abd6a"
+    },
+    {
+      "path": "before-distribution-en-XA-light-1440x900.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 113789,
+      "sha256": "4aeee2e1401da298364471fa87a12d32ce4b05c940ee983c3eb44109407904f3"
+    },
+    {
+      "path": "before-distribution-en-XA-light-1280x720.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 110085,
+      "sha256": "1af767d2db0337b3de9506ef278a25cc143f2d822c65c0d54d54c9eceaa97e02"
+    },
+    {
+      "path": "before-distribution-en-XA-dark-1440x900.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 113396,
+      "sha256": "fdf697becfb5cc147328774fde0a53e4fc95d96ac06daddd3bc730aa9b644126"
+    },
+    {
+      "path": "before-distribution-en-XA-dark-1280x720.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 109756,
+      "sha256": "5016fe90c991e6b5c1688ed3aadde1ebfdc41ebfeff2268bf9cc9294f311ab2c"
+    }
+  ]
+}

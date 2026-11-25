@@ -5,7 +5,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promise
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {showPanel,showTable,exportAnalysis} from './panel'
-import {formatNumber} from '../../src/shared/i18n'
+import {formatNumber,t} from '../../src/shared/i18n'
 let app:ElectronApplication,page:Page,folder:string
 const fields=['Varianza poblacional (n)','Varianza muestral (n−1)','P10 (percentil 10)','P25 (percentil 25)','P75 (percentil 75)','P90 (percentil 90)']
 test.beforeEach(async()=>{
@@ -20,9 +20,21 @@ async function statistics(){await showPanel(page,'Estadísticas');return page.ge
 async function explorer(){await statistics();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();return page.getByRole('region',{name:'Exploración de columna',exact:true})}
 async function analyze(panel:Locator){await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
 async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración completa.')}
-async function formatted(value:number|null){return value===null?'—':page.evaluate(value=>value.toLocaleString(undefined,{maximumSignificantDigits:12}),value)}
+async function formatted(value:number|null){return value===null?'—':formatNumber(value,{maximumFractionDigits:2},'es')}
 async function profileValues(panel:Locator,values:(number|null)[]){const details=panel.locator('dl[aria-label="Varianza y percentiles"]');for(let i=0;i<fields.length;i++)await expect(details.getByText(fields[i],{exact:true}).locator('..').locator('dd')).toHaveText(await formatted(values[i]))}
-async function tableValues(panel:Locator,values:number[]){const headings=await panel.getByRole('columnheader').allTextContents();for(let i=0;i<fields.length;i++){const column=headings.indexOf(fields[i]);expect(column).toBeGreaterThan(0);const cell=panel.locator('tbody tr').first().locator('th,td').nth(column);await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'));await expect(cell).toHaveAttribute('title',/\S/);expect(Number(await cell.getAttribute('title'))).toBeCloseTo(values[i],12)}}
+async function tableValues(panel:Locator,values:number[]){
+ const headings=await panel.getByRole('columnheader').allTextContents()
+ for(let i=0;i<fields.length;i++){
+  const column=headings.indexOf(fields[i]);expect(column).toBeGreaterThan(0)
+  const cell=panel.locator('tbody tr').first().locator('th,td').nth(column)
+  await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'))
+  const number=cell.locator('[data-analysis-value]')
+  const exact=await number.getAttribute('data-analysis-value')
+  expect(Number(exact)).toBeCloseTo(values[i],12)
+  // Full-value help preserves the engine's floating-point residual; the independent numeric oracle stays above.
+  await expect(cell).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:exact!},'es'))
+ }
+}
 async function report(panel:Locator,title:string,detailed=false){await exportAnalysis(page,detailed?'describe.detailedReport':'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
 
 test('percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia',async()=>{

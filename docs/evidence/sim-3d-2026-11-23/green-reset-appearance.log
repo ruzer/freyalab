@@ -1,0 +1,9 @@
+
+Running 1 test using 1 worker
+
+(node:68412) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sim3d-decimals.spec.ts:243:1 › SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secciones (es)
+  1 passed (2.4s)

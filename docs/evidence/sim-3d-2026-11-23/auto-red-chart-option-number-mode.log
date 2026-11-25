@@ -1,0 +1,50 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/chart-option.test.ts (4 tests | 2 failed) 23ms
+   × SIM-3d · la ecuación y ARIA en pantalla usan auto sin inventar R² igual a uno 19ms
+   × SIM-3d · la ecuación y ARIA en pantalla usan all sin inventar R² igual a uno 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-option.test.ts > SIM-3d · la ecuación y ARIA en pantalla usan auto sin inventar R² igual a uno
+AssertionError: expected 'y = 0.6·x + 0.8333' to be 'y = 0.6·x + 0.83' // Object.is equality
+
+Expected: "y = 0.6·x + 0.83"
+Received: "y = 0.6·x + 0.8333"
+
+ ❯ tests/chart-option.test.ts:21:25
+     19|  setLanguage('es')
+     20|  const plot=chartOption(data,options,screen(mode),['X','Y'])
+     21|  expect(equation(plot)).toBe(expectedEquation)
+       |                         ^
+     22|  expect(aria(plot)).toContain('R² = 0.9996')
+     23|  expect(aria(plot)).toContain('r = '+expectedR+' ·')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/chart-option.test.ts > SIM-3d · la ecuación y ARIA en pantalla usan all sin inventar R² igual a uno
+AssertionError: expected 'y = 0.6·x + 0.8333' to be 'y = 0.6·x + 0.83333333333' // Object.is equality
+
+Expected: "y = 0.6·x + 0.83333333333"
+Received: "y = 0.6·x + 0.8333"
+
+ ❯ tests/chart-option.test.ts:21:25
+     19|  setLanguage('es')
+     20|  const plot=chartOption(data,options,screen(mode),['X','Y'])
+     21|  expect(equation(plot)).toBe(expectedEquation)
+       |                         ^
+     22|  expect(aria(plot)).toContain('R² = 0.9996')
+     23|  expect(aria(plot)).toContain('r = '+expectedR+' ·')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  21:51:23
+   Duration  340ms (import 71%, transform 16%, tests 10%, worker 3%)
+

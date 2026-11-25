@@ -515,7 +515,7 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true})
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.')
  await expect(explorer.getByLabel('Perfil de columna').locator('dt').filter({hasText:/^Mediana$/}).locator('..').locator('dd')).toHaveText(/4[.,]5/)
- await expect(explorer).toContainText('Documento completo · 8 filas · revisión 0')
+ await expect(explorer.locator('.scope')).toHaveText('Valor · documento completo · 8 filas')
  await explorer.getByRole('button',{name:'Frecuencias',exact:true}).click()
  const frequencies=explorer.getByRole('region',{name:'Frecuencias de columna',exact:true})
  const counts=await frequencies.locator('tbody tr').first().locator('td').allTextContents();expect(counts.slice(0,2)).toEqual(['"4"','3']);expect(counts[2]).toMatch(/^37[.,]5 %$/);expect(counts[3]).toBe('2')
@@ -527,12 +527,17 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  expect(await distribution.locator('tbody tr td:last-child').allTextContents()).toEqual(['1','5','1','1'])
  await explorer.getByRole('button',{name:'Correlación',exact:true}).click();await explorer.getByLabel('Columna para correlación',{exact:true}).selectOption('1')
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pares numéricos de la misma fila8')
- await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pearson con 2. Doble1')
+ const pearson=explorer.getByLabel('Correlación de Pearson')
+ await expect(pearson.locator('dt').first()).toHaveText('Pearson con 2. Doble')
+ const coefficient=pearson.locator('dd').first(),raw=Number(await coefficient.locator('[data-analysis-value]').getAttribute('data-analysis-value'))
+ expect(raw).toBeCloseTo(1,14)
+ // Automático no redondea el residuo del motor a un extremo que no devolvió.
+ await expect(coefficient).toHaveText(String(raw));await expect(coefficient).toHaveAttribute('title','Valor completo: '+String(raw))
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({animations:'disabled',path:test.info().outputPath(`csv-exploration-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await explorer.getByLabel('Columna para correlación',{exact:true}).focus();await page.screenshot({animations:'disabled',path:test.info().outputPath('csv-exploration-light-1280x800.png')})
  await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('footer')).toContainText('1 de 8 filas');await showPanel(page,'Estadísticas')
  await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
- await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Vista filtrada · 1 filas · revisión 0')
+ await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.locator('.scope')).toHaveText('Valor · vista filtrada · 1 fila')
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
  await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await closeAnalysis(page);await expect(explorer).toHaveCount(0);await expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toBeFocused()
 })
@@ -552,7 +557,7 @@ test('exploración CSV: paginación, cancelación, muestra e IPC inválido',{tag
  const rejected=await page.evaluate(async id=>{try{await window.freya.analyzeColumn(id,{column:0,revision:0,requestId:crypto.randomUUID(),frequencyOffset:0,duplicatesOnly:false,bins:0});return false}catch{return true}},doc.id);expect(rejected).toBe(true)
  const sample=join(directory,'muestra-exploracion.csv');await writeFile(sample,'Valor\n'+'2\n'.repeat(250));await truncate(sample,50*1024*1024+1);await page.evaluate(path=>window.freya.openPaths([path]),sample)
  await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
- await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Muestra limitada · 200 filas');await expect(explorer).toContainText('no el archivo completo')
+ await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.locator('.scope')).toHaveText('Valor · muestra limitada · 200 filas');await expect(explorer).toContainText('no el archivo completo')
 })
 
 

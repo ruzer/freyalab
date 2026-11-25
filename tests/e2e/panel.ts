@@ -106,11 +106,14 @@ export async function openChartData(page:Page){
  if(await table.getAttribute('open')===null)await table.locator(':scope>summary').click()
  return table
 }
-export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'values'|'filters'){
+export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'values'|'filters',keyboard=false){
  const fields=await openChartFields(page),entry=fields.locator('.field-entry').filter({has:page.getByTitle(field,{exact:true})})
  await expect(fields.locator('.field-list')).toHaveAttribute('aria-busy','false')
- await entry.hover()
- await entry.getByRole('button',{name:await translated(page,'charts.fields.more',{field}),exact:true}).click()
+ if(keyboard)await entry.press('Shift+F10')
+ else{
+  await entry.hover()
+  await entry.getByRole('button',{name:await translated(page,'charts.fields.more',{field}),exact:true}).click()
+ }
  const zoneLabel=await translated(page,'charts.fields.'+zone),destinations=await Promise.all(['charts.fields.destination','charts.fields.moveDestination'].map(key=>translated(page,key,{zone:zoneLabel}))),recommended=await translated(page,'charts.fields.recommended')
  const escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
  await page.getByRole('menuitem',{name:new RegExp('^(?:'+destinations.map(escaped).join('|')+')(?: '+escaped(recommended)+')?$')}).click()

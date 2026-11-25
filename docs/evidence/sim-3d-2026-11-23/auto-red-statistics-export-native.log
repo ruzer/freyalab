@@ -1,0 +1,80 @@
+
+Running 2 tests using 1 worker
+
+(node:25869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es) (32.5s)
+(node:26025) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (all) (es) (32.3s)
+
+
+  1) [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es)
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Datos JSON', exact: true })
+
+
+       at panel.ts:80
+
+      78 | }
+      79 | export async function analysisExportItem(page:Page,key:string,parameters:TranslationParameters={}){return(await openAnalysisExport(page)).getByRole('menuitem',{name:await translated(page,key,parameters),exact:true})}
+    > 80 | export async function exportAnalysis(page:Page,key:string,parameters:TranslationParameters={}){await(await analysisExportItem(page,key,parameters)).click()}
+         |                                                                                                                                                     ^
+      81 | export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
+      82 | // Solo el botón real: manual, revisión cambiada o reintento de una cancelación.
+      83 | export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button')
+        at exportAnalysis (<worktree>/tests/e2e/panel.ts:80:149)
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:320:2
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-expo-f3c0d--valores-completos-auto-es--csv/attachments/electron-context-741c1ababee978a62c3c16ffaa1027007780056a.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-expo-f3c0d--valores-completos-auto-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-expo-f3c0d--valores-completos-auto-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-expo-f3c0d--valores-completos-auto-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (all) (es)
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Datos JSON', exact: true })
+
+
+       at panel.ts:80
+
+      78 | }
+      79 | export async function analysisExportItem(page:Page,key:string,parameters:TranslationParameters={}){return(await openAnalysisExport(page)).getByRole('menuitem',{name:await translated(page,key,parameters),exact:true})}
+    > 80 | export async function exportAnalysis(page:Page,key:string,parameters:TranslationParameters={}){await(await analysisExportItem(page,key,parameters)).click()}
+         |                                                                                                                                                     ^
+      81 | export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
+      82 | // Solo el botón real: manual, revisión cambiada o reintento de una cancelación.
+      83 | export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button')
+        at exportAnalysis (<worktree>/tests/e2e/panel.ts:80:149)
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:320:2
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-expo-61c81-n-valores-completos-all-es--csv/attachments/electron-context-dc07e2abc5e6a8cdec03d162bfc843e7ab37a3bd.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-expo-61c81-n-valores-completos-all-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-expo-61c81-n-valores-completos-all-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-expo-61c81-n-valores-completos-all-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es)
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:317:43 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (all) (es)

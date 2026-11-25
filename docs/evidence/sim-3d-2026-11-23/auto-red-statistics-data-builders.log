@@ -1,0 +1,27 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/statistics-data.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/statistics-data.test.ts [ tests/statistics-data.test.ts ]
+Error: Cannot find module '../src/renderer/lib/statistics-data' imported from <worktree>/tests/statistics-data.test.ts
+ ❯ tests/statistics-data.test.ts:2:1
+      1| import {afterEach,expect,it} from 'vitest'
+      2| import {describeData,statisticsData,columnAnalysisData} from '../src/r…
+       | ^
+      3| import {STATISTICS_FIELDS,PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,type Re…
+      4| import type {DescribeEntry} from '../src/renderer/lib/describe-table'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:21:51
+   Duration  125ms (worker 97%, environment 3%)
+

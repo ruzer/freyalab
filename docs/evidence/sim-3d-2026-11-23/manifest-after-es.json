@@ -1,0 +1,142 @@
+{
+  "phase": "after",
+  "language": "es",
+  "sourceHeadReportedByRunner": "89946d939949917996ebfd306a37ddd417366191",
+  "buildEntryFile": "index.js",
+  "buildEntrySHA256": "3dc51956b7cfcfb12766d870f7ced6531ece61fb18ae27abc199da201ec445b7",
+  "buildUnchanged": true,
+  "sourceFiles": [
+    {
+      "name": "precision.csv",
+      "bytes": 37,
+      "sha256": "3decba13016bd6024ad7babb3bdec4d8410ff670f7a4833a290b39e9d5537748"
+    },
+    {
+      "name": "datos.csv",
+      "bytes": 263,
+      "sha256": "2134604359eb3e13880be470a8d19e8a0248578c4ebbbcf8f5eccb50a41ed8f1"
+    }
+  ],
+  "images": [
+    {
+      "path": "after-precision-es-light-1440x900.png",
+      "state": "precision",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 123474,
+      "sha256": "c6b2442b7dc190465742e66cd482a3300ab76b474c9460b922f6188052d2f051"
+    },
+    {
+      "path": "after-precision-es-light-1280x720.png",
+      "state": "precision",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 115284,
+      "sha256": "b05e7a46a261d5c1a593540a8fa1761401c6f67f7c7af1545107140cfc3e42c6"
+    },
+    {
+      "path": "after-precision-es-dark-1440x900.png",
+      "state": "precision",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 121760,
+      "sha256": "b79d4ba834ff792a494c3d1903f2b78e412c5f35b0e2ab9ecb7c404758d980ad"
+    },
+    {
+      "path": "after-precision-es-dark-1280x720.png",
+      "state": "precision",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 113318,
+      "sha256": "63f2af67765007ed1c3ab77ebb91d4427b7a2eebf504343aa3bb763ffe4b25fd"
+    },
+    {
+      "path": "after-frequencies-es-light-1440x900.png",
+      "state": "frequencies",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 107831,
+      "sha256": "55a6d65b2b9881266f4777977099cff182ae69a3666c933776ee84d7e8336d43"
+    },
+    {
+      "path": "after-frequencies-es-light-1280x720.png",
+      "state": "frequencies",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 102635,
+      "sha256": "c96e2e51389551d97d4bc3f537073cd233261a554f8883e4c90b85503101134a"
+    },
+    {
+      "path": "after-frequencies-es-dark-1440x900.png",
+      "state": "frequencies",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 106897,
+      "sha256": "bdf5c0795c330bceaa8178e0cc65b2b252ccbcf077ce3ddfa2169f94b43d5178"
+    },
+    {
+      "path": "after-frequencies-es-dark-1280x720.png",
+      "state": "frequencies",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 101952,
+      "sha256": "58dadcd3a9d857f0a07fc7b70b26269e476b2422cf4524b15fc3069f4621f734"
+    },
+    {
+      "path": "after-distribution-es-light-1440x900.png",
+      "state": "distribution",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 96260,
+      "sha256": "953b8875aff52f9bf68776d332adc6780f6c68b4ff31dbd203a1f00c29c0c734"
+    },
+    {
+      "path": "after-distribution-es-light-1280x720.png",
+      "state": "distribution",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 91866,
+      "sha256": "cc76767bed79546b48429980901af46201b0bbce11d82755020679247888c31c"
+    },
+    {
+      "path": "after-distribution-es-dark-1440x900.png",
+      "state": "distribution",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 95652,
+      "sha256": "194deecb611c2adb4388ef8634ea1dedb7acaba5eee8fb9320019e6eae14f85e"
+    },
+    {
+      "path": "after-distribution-es-dark-1280x720.png",
+      "state": "distribution",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 91558,
+      "sha256": "e71f32dd57108879f72f2b6f96c24b644e7025302c173c57072f4c7e28a4119b"
+    }
+  ]
+}

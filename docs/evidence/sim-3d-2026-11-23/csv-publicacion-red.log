@@ -1,0 +1,76 @@
+
+Running 2 tests using 1 worker
+
+(node:88311) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[SIM3D-CSV-PUBLISH-PROBE] {"delays":1,"delayMs":1000,"target":"precision.analisis.csv"}
+  ✘  1 [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es) (3.7s)
+(node:88342) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[SIM3D-CSV-PUBLISH-PROBE] {"delays":1,"delayMs":1000,"target":"precision.analisis.csv"}
+  ✘  2 [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (en-XA) (2.8s)
+
+
+  1) [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es)
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: ["Estadística", "Valor", "Pequeño", "Entero", "Flotante"]
+    Received: undefined
+
+      364 |  await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+      365 |  const {parse}=await import("/workspace/recovery/sim3d-continuacion/node_modules/csv-parse/lib/sync.js"),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+    > 366 |  expect(csv[0]).toEqual(data.columns)
+          |                 ^
+      367 |  expect(csv.slice(1)).toEqual(data.rows.map(row=>row.map(value=>value===null?'':String(value))))
+      368 |  const context=JSON.parse(await readFile(contextPath,'utf8'));expect(context.rows).toEqual(data.rows)
+      369 |  await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+        at /workspace/recovery/sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:366:17
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-c1290--valores-completos-auto-es--csv/attachments/electron-context-15b1b9654cb13d386a9a30b9e52745eba1e29b4e.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-c1290--valores-completos-auto-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-c1290--valores-completos-auto-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-c1290--valores-completos-auto-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (en-XA)
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: ["[Státïstïc~~~]", "Valor", "Pequeño", "Entero", "Flotante"]
+    Received: undefined
+
+      364 |  await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+      365 |  const {parse}=await import("/workspace/recovery/sim3d-continuacion/node_modules/csv-parse/lib/sync.js"),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+    > 366 |  expect(csv[0]).toEqual(data.columns)
+          |                 ^
+      367 |  expect(csv.slice(1)).toEqual(data.rows.map(row=>row.map(value=>value===null?'':String(value))))
+      368 |  const context=JSON.parse(await readFile(contextPath,'utf8'));expect(context.rows).toEqual(data.rows)
+      369 |  await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+        at /workspace/recovery/sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:366:17
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-80f18-lores-completos-auto-en-XA--csv/attachments/electron-context-781f4e18d8634b6cf08fe0fa7008039435ff1984.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-80f18-lores-completos-auto-en-XA--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-80f18-lores-completos-auto-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3d-evidence/csv-publication-race-probe/results/csv-publication-race-probe-80f18-lores-completos-auto-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es)
+    [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:350:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (en-XA)

@@ -1,0 +1,11 @@
+
+Running 2 tests using 1 worker
+
+(node:89107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[SIM3D-CSV-PUBLISH-PROBE] {"delays":1,"delayMs":1000,"target":"precision.analisis.csv"}
+  ✓  1 [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:361:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es) (4.3s)
+[SIM3D-CSV-PUBLISH-PROBE] {"delays":1,"delayMs":1000,"target":"precision.analisis.csv"}
+  ✓  2 [csv] › ../sim3d-evidence/csv-publication-race-probe/csv-publication-race-probe.spec.ts:361:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (en-XA) (3.7s)
+
+  2 passed (8.4s)

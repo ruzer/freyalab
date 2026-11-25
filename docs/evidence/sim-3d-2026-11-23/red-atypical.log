@@ -1,0 +1,82 @@
+
+Running 1 test using 1 worker
+
+(node:81284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3d-atypical.spec.ts:79:1 › SIM-3d Caja: atípico fraccional muestra dos decimales y copia exacto sin cambiar el identificador (es) @solo (19.1s)
+
+
+  1) [csv] › tests/e2e/sim3d-atypical.spec.ts:79:1 › SIM-3d Caja: atípico fraccional muestra dos decimales y copia exacto sin cambiar el identificador (es) @solo
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr').first().locator('td').nth(8)
+    Expected: "[100.12]"
+    Received: "[100.12345]"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "soft toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr').first().locator('td').nth(8) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr').first().locator('td').nth(8)
+        34 × locator resolved to <td class="svelte-1wo6u31">…</td>
+           - unexpected value "[100.12345]"
+
+
+      88 |  await expect(cell('outliers')).toHaveText('1');await expect(cell('count')).toHaveText('5')
+      89 |  const atypical=cell('atypical')
+    > 90 |  await expect.soft(atypical).toHaveText('[100.12]')
+         |                              ^
+      91 |  expect.soft(await atypical.locator('[title]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('title')))).toEqual(['Valor exacto: 100.12345'])
+      92 |  expect(await selectOutlierPart(atypical)).toBe('100.')
+      93 |  const before=await selectionState()
+        at <worktree>/tests/e2e/sim3d-atypical.spec.ts:90:30
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Valor exacto: 100.12345",
+    - ]
+    + Array []
+
+      89 |  const atypical=cell('atypical')
+      90 |  await expect.soft(atypical).toHaveText('[100.12]')
+    > 91 |  expect.soft(await atypical.locator('[title]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('title')))).toEqual(['Valor exacto: 100.12345'])
+         |                                                                                                                 ^
+      92 |  expect(await selectOutlierPart(atypical)).toBe('100.')
+      93 |  const before=await selectionState()
+      94 |  expect.soft(await nativeCopy()).toBe('100.12345')
+        at <worktree>/tests/e2e/sim3d-atypical.spec.ts:91:113
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "100.12345"
+    Received: "100."
+
+      92 |  expect(await selectOutlierPart(atypical)).toBe('100.')
+      93 |  const before=await selectionState()
+    > 94 |  expect.soft(await nativeCopy()).toBe('100.12345')
+         |                                  ^
+      95 |  expect(await selectionState()).toEqual(before)
+      96 |  await expect(row.locator('td').first()).toHaveText('00123')
+      97 |  await expect(chartPanel(page).locator('.plot svg')).toBeVisible()
+        at <worktree>/tests/e2e/sim3d-atypical.spec.ts:94:34
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-atypical-SIM-3d-Caja-2bb2d-ambiar-el-identificador-es--csv/attachments/electron-context-6a6b8487d359e8c679ee1f52267b46950b99b1c1.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-atypical-SIM-3d-Caja-2bb2d-ambiar-el-identificador-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-atypical-SIM-3d-Caja-2bb2d-ambiar-el-identificador-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-atypical-SIM-3d-Caja-2bb2d-ambiar-el-identificador-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/sim3d-atypical.spec.ts:79:1 › SIM-3d Caja: atípico fraccional muestra dos decimales y copia exacto sin cambiar el identificador (es) @solo

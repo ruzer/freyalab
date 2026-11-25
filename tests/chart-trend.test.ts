@@ -4,6 +4,7 @@ import {createDuckDB,NODE_RUNTIME,VoidLogger,type DuckDBConnection} from '@duckd
 import {linearRegression,linearRegressionLine,rSquared,sampleCorrelation} from 'simple-statistics'
 import {chartSQL,chartData,type ChartOptions} from '../src/shared/charts'
 import {chartTrendLine,chartTrendText} from '../src/shared/chart-trend'
+import * as chartTrend from '../src/shared/chart-trend'
 import {setLanguage} from '../src/shared/i18n'
 
 let connection:DuckDBConnection,close:()=>void
@@ -100,4 +101,53 @@ it('localiza los errores nuevos de la tendencia sin cambiar el contrato anterior
  setLanguage('en')
  try{expect(()=>chartSQL(headers,{...options,trend:'true' as never})).toThrow('trend option')}
  finally{setLanguage('es')}
+})
+
+it('SIM-3d · el texto HTML automático usa tres decimales en coeficientes y unidad de porcentaje',()=>{
+ connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','5'),('4','4'),('5','2')")
+ const trend=analyze().trend!,before=structuredClone(trend)
+ const text=chartTrendText(trend,headers,options,false,'auto').join('\n')
+ expect(text).toContain('r = -0.775')
+ expect(text).toContain('R² = 0.6')
+ expect(text).toContain('60 %')
+ expect(text).toContain('5 puntos')
+ expect(trend).toEqual(before)
+})
+
+it('SIM-3d · Más precisión afecta al texto HTML sin limitar la ayuda ni el informe a quince cifras',()=>{
+ connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','5'),('4','4'),('5','2')")
+ const trend=analyze().trend!,text=chartTrendText(trend,headers,options,false,'all').join('\n')
+ expect(text).toContain('r = '+String(Number(trend.r!.toPrecision(15))))
+ const full=chartTrendText(trend,headers,options,true).join('\n')
+ expect(full).toContain('r = '+String(trend.r))
+ expect(full).toContain('R² = '+String(trend.r2))
+ expect(chartTrendText(trend,headers,options,true,'auto').join('\n')).toBe(full)
+ expect(chartTrendText(trend,headers,options,true,'all').join('\n')).toBe(full)
+})
+
+it('SIM-3d · la tendencia entrega métricas crudas tipadas para marcar números y conservar texto',()=>{
+ connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','5'),('4','4'),('5','2')")
+ const trend=analyze().trend!,fragments=Reflect.get(chartTrend,'chartTrendFragments')
+ expect(fragments).toBeTypeOf('function')
+ const lines=Reflect.apply(fragments,undefined,[trend,headers,options]) as {type:string;value?:number;kind?:string;unit?:string;text?:string}[][]
+ expect(lines).toHaveLength(4)
+ expect(lines.flat().filter(part=>part.type==='number')).toEqual([
+  {type:'number',value:trend.slope,kind:'number',unit:''},
+  {type:'number',value:Math.abs(trend.intercept!),kind:'number',unit:''},
+  {type:'number',value:trend.r2,kind:'coefficient',unit:''},
+  {type:'number',value:trend.r,kind:'coefficient',unit:''},
+  {type:'number',value:trend.n,kind:'count',unit:''},
+  {type:'number',value:trend.r2!*100,kind:'percent',unit:' %'},
+ ])
+ expect(lines[3]).toEqual([{type:'text',text:chartTrendText(trend,headers,options,true)[3]}])
+ expect(lines[2].filter(part=>part.type==='text').map(part=>part.text).join('')).toContain('A más X, menos Y.')
+})
+
+it('SIM-3d · la ruta anterior del dibujo y el informe conserva su representación completa',()=>{
+ connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','5'),('4','4'),('5','2')")
+ const trend=analyze().trend!,full=chartTrendText(trend,headers,options,true)
+ expect(chartTrendText(trend,headers,options).join('\n')).toContain('r = -0.7746')
+ expect(full[1]).toBe(`R² = ${String(trend.r2)} · r = ${String(trend.r)} · 5 puntos`)
+ expect(full[2]).toContain(String(trend.r2!*100)+'%')
+ expect(chartTrendLine(trend)).toEqual([[1,trend.slope!+trend.intercept!],[5,trend.slope!*5+trend.intercept!]])
 })

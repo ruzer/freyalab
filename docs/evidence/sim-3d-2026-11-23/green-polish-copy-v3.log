@@ -1,0 +1,19 @@
+
+Running 11 tests using 1 worker
+
+(node:61921) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:81:1 › SIM-3d cifras y title conservan resultados completos en Perfil, Frecuencias y Distribución (es)
+[2/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:109:2 › SIM-3d alcance breve y explicación nativa por teclado (es)
+[3/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:124:2 › SIM-3d NFC y motivo genérico usan palabras para estudiantes (es)
+[4/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d límite de deshacer explica rechazo real sin aplicar (es)
+[5/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (es)
+[6/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:109:2 › SIM-3d alcance breve y explicación nativa por teclado (en-XA)
+[7/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:124:2 › SIM-3d NFC y motivo genérico usan palabras para estudiantes (en-XA)
+[8/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d límite de deshacer explica rechazo real sin aplicar (en-XA)
+[9/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (en-XA)
+[10/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:206:1 › SIM-3d control: Copiar por teclado alcanza el portapapeles real en Análisis (es) @solo
+[11/11] [csv] › tests/e2e/sim3d-numbers.spec.ts:216:1 › SIM-3d copia completa para selecciones parciales y múltiples; conserva porcentaje e identificador (es) @solo
+  11 passed (18.1s)

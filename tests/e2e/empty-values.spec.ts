@@ -32,7 +32,7 @@ async function information(){
 test('LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar',async()=>{
  const panel=await information(),row=panel.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Cantidad',exact:true})})
  const details=row.locator('.quality-breakdown')
- await expect(details.locator('summary')).toHaveText('3 · 43 %')
+ await expect(details.locator('summary')).toHaveText('3 · 42.86 %')
  await details.locator('summary').click()
  await expect(details.locator('dd')).toHaveText(['1','1','1'])
  for(const name of ['Ver filas vacías','Rellenar vacíos…','Eliminar filas con vacío…'])await expect(details.getByRole('button',{name,exact:true})).toBeVisible()

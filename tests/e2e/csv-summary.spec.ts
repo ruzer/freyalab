@@ -42,7 +42,7 @@ async function configureSum(){const panel=await summary();await chartAssignColum
 test('F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado',async()=>{
  const panel=await configureSum(),table=panel.locator('.pivot-result table')
  await expect(table.locator('tbody tr')).toHaveCount(4)
- await expect(table.locator('tfoot')).toContainText('4,400');await expect(table.locator('tfoot')).toContainText('2,800');await expect(table.locator('tfoot')).toContainText('7,200');await expect(table.locator('tfoot')).toContainText('100%')
+ await expect(table.locator('tfoot')).toContainText('4,400');await expect(table.locator('tfoot')).toContainText('2,800');await expect(table.locator('tfoot')).toContainText('7,200');await expect(table.locator('tfoot')).toContainText('100 %')
  await expect(table.getByRole('columnheader',{name:'% del total',exact:true})).toBeVisible()
  const types=panel.getByRole('group',{name:'Formas de visualizar',exact:true});await expect(types.getByRole('button')).toHaveCount(6)
  await (await chartTypeButton(page,'heatmap')).focus();await page.keyboard.press('Enter');await expect((await chartTypeButton(page,'heatmap'))).toHaveAttribute('aria-pressed','true')

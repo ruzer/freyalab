@@ -1,13 +1,16 @@
 <script lang="ts">
+ import AnalysisNumber from './AnalysisNumber.svelte'
+ import {formatAnalysisFullNumber,type AnalysisNumberMode} from '../../shared/analysis-number-format'
  import {onDestroy,untrack} from 'svelte'
  import {t,formatNumber} from '../lib/i18n.svelte'
  import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey} from '../lib/csv-analysis-view'
  import {describeTable,type DescribeEntry} from '../lib/describe-table'
+ import {describeData} from '../lib/statistics-data'
  import {describeReport,type ReportContext} from '../lib/statistics-report'
  import {controlHint} from '../lib/control-hint'
  import type {AnalysisExportAction} from '../lib/analysis-export'
  import type {DocumentInfo,TableQuery,TableViewMeta,ColumnAnalysisRequest,TableStatsOptions} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,onerror,onreport,busy=$bindable(false),blocked=false,shown=true,externalExports=false}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;busy?:boolean;blocked?:boolean;shown?:boolean;externalExports?:boolean}=$props()
+ let {doc,columns,query,queryValid,viewMeta,onerror,onreport,busy=$bindable(false),blocked=false,shown=true,externalExports=false,numberMode='auto'}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;busy?:boolean;blocked?:boolean;shown?:boolean;externalExports?:boolean;numberMode?:AnalysisNumberMode}=$props()
  let scope=$state<'all'|'view'|'selected'>('all'),analyzedScope=$state<'all'|'view'|'selected'>('all'),includeText=$state(false),reporting=$state(false),entries=$state<DescribeEntry[]>([]),total=$state(0),status=$state('describe.idle'),context=$state<ReportContext|null>(null)
  let generation=0,active:{id:string;requestId:string}|undefined
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
@@ -67,8 +70,19 @@
   finally{if(current()){active=undefined;busy=false}}
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(describeReport({...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)},$state.snapshot(entries),includeText))}catch(error){onerror(String(error))}finally{reporting=false}}
- export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':!context||!matrix.columns.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
- const full=(value:string|number|null)=>value===null?'':String(value)
+ async function exportData(format:'csv'|'json'){
+  if(!context||!matrix.columns.length||busy||reporting||doc.revision!==context.revision)return
+  const captured={...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)}
+  const data=describeData(captured,$state.snapshot(entries),includeText)
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:captured.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
+ export function exportActions():AnalysisExportAction[]{
+  const disabledReason=busy||reporting?'busy':!context||!matrix.columns.length?'result':doc.revision!==context.revision?'refresh':null
+  return[{label:t('describe.report'),disabledReason,run:report},{label:t('analysis.export.csv'),disabledReason,title:t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t('analysis.export.json'),disabledReason,run:()=>exportData('json')}]
+ }
+ const full=(value:string|number|null)=>value===null?'':typeof value==='number'?t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(value)}):value
 </script>
 
 <section class="describe-panel" aria-label={t('describe.title')}>
@@ -86,7 +100,7 @@
   <div class="describe-scroll" role="region" aria-label={t('describe.results')} tabindex="0"><table>
    <caption>{scopeLabel(context?analyzedScope:scope,context?.sample??sample)}</caption>
    <thead><tr><th scope="col">{t('describe.metric')}</th>{#each matrix.columns as column(column.index)}<th scope="col"><span>{column.name||t('describe.column',{index:column.index+1})}</span><small>{t('describe.type.'+column.profile.kind)}</small>{#if column.unavailable}<small title={t('describe.unavailableHelp')}>{t('describe.unavailable')}</small>{/if}</th>{/each}</tr></thead>
-   <tbody>{#each matrix.rows as row}<tr><th scope="row" aria-label={t('describe.metric.'+row.metric)+' · '+t('describe.pandasMetric',{metric:row.metric})+' · '+t('describe.help.'+row.metric)}><abbr title={t('describe.metric.'+row.metric)+' · '+t('describe.pandasMetric',{metric:row.metric})+' · '+t('describe.help.'+row.metric)}>{t('describe.metric.'+row.metric)}</abbr></th>{#each row.values as value}<td title={full(value)}>{value===null?'':typeof value==='number'?formatNumber(value,{maximumFractionDigits:2}):value}</td>{/each}</tr>{/each}</tbody>
+   <tbody>{#each matrix.rows as row}<tr><th scope="row" aria-label={t('describe.metric.'+row.metric)+' · '+t('describe.pandasMetric',{metric:row.metric})+' · '+t('describe.help.'+row.metric)}><abbr title={t('describe.metric.'+row.metric)+' · '+t('describe.pandasMetric',{metric:row.metric})+' · '+t('describe.help.'+row.metric)}>{t('describe.metric.'+row.metric)}</abbr></th>{#each row.values as value}<td title={full(value)}>{#if value===null}{:else if typeof value==='number'}<AnalysisNumber {value} mode={numberMode} kind={row.metric==='count'||row.metric==='unique'||row.metric==='freq'?'count':'number'}/>{:else}{value}{/if}</td>{/each}</tr>{/each}</tbody>
   </table></div>
  {:else if context}<p>{t('describe.noNumbers')}</p>{/if}
  <details><summary>{t('describe.how')}</summary><p>{t('describe.revision',{revision:context?.revision??doc.revision})}</p><p>{t('describe.how.statistics')}</p><p>{t('describe.how.identifiers')}</p><p>{t('describe.how.decimal')}</p></details>

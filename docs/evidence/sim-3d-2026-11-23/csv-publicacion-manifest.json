@@ -1,0 +1,46 @@
+{
+  "red.log": {
+    "rawSha256": "69c6da2d154590222d51cc54f680c931d9b97af4c53e635ddd72703ea0072439",
+    "publishedSha256": "77992f1ba75ef5e6e5740b3fae5b195fad2905261931dc7d424ad2c731a7c2bb"
+  },
+  "green.log": {
+    "rawSha256": "135b0aec83366a14f3e55674039c7fd94101b53ebc36d316270d75919f3bb36b",
+    "publishedSha256": "135b0aec83366a14f3e55674039c7fd94101b53ebc36d316270d75919f3bb36b"
+  },
+  "green-real-six.log": {
+    "rawSha256": "37e360cf04d0dbf96489a8ee999dbdef263649ba05e1cf2c2ab73f67aa29c3cf",
+    "publishedSha256": "37e360cf04d0dbf96489a8ee999dbdef263649ba05e1cf2c2ab73f67aa29c3cf"
+  },
+  "check-final.log": {
+    "rawSha256": "f2c187269c54efb2b2a8ceef3a4da073b74d23010a6f52476f1d6af5b3e89458",
+    "publishedSha256": "92656fe80b519444fe6d77e743a17f83983539b46876a9183e1d67a06312a8fd"
+  },
+  "redStats": {
+    "startTime": "2026-11-24T07:52:21.050Z",
+    "duration": 7307.427,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "greenStats": {
+    "startTime": "2026-11-24T07:57:00.934Z",
+    "duration": 8446.98,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "red-probe-source.txt": {
+    "sha256": "cf6e6d7385e75d24847e08e9343d12e77695ca1410b2b3d9390c9ed3125f1233"
+  },
+  "csv-publication-race-probe.spec.ts": {
+    "sha256": "de22472ac51e0bc09abd40725b2f6ee7cac747533052ff08feb33ef0e1edf7ca"
+  },
+  "playwright.config.ts": {
+    "sha256": "815a1ce0219a5bd8a4909512eef89e12a3a6f394b7fd60a17addd0c66df47be1"
+  },
+  "playwright.green.config.ts": {
+    "sha256": "a17c08d698a71e965b5f53fe7c87a348cd7d75b3c192e1602aae0895d67f65cd"
+  }
+}

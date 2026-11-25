@@ -175,7 +175,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(profile.getByLabel('Filas para explorar').locator('option[value="all"]')).toHaveText('Documento completo')
  await profile.getByRole('button',{name:'Explorar columna',exact:true}).click()
  await expect(profile.getByRole('status')).toHaveText('Exploración completa.')
- await expect(profile.locator('.scope')).toContainText('Documento completo')
+ await expect(profile.locator('.scope')).toHaveText('ID · documento completo · 1 fila')
  await exportAnalysis(page,'describe.report')
  const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
  expect(report.text).toContain('Documento completo')

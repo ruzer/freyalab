@@ -1,0 +1,17 @@
+
+Running 6 tests using 1 worker
+
+(node:93571) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (es) (3.6s)
+  ✓  2 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (en-XA) (3.6s)
+(node:93736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (es) (3.6s)
+  ✓  4 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (en-XA) (3.6s)
+(node:93861) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (es) (3.7s)
+  ✓  6 [csv] › tests/e2e/sim3d-numbers.spec.ts:154:2 › SIM-3d fuentes en memoria mantienen cifras y quitan la revisión de SQL y Gráficos (en-XA) (3.6s)
+
+  6 passed (22.7s)

@@ -1,49 +1,43 @@
-# SIM‑3d · Cifras y textos para estudiantes · Alcance y ADR 0021
+# SIM-3d · Alcance de continuación y ADR0021
 
-Base de preparación `f227`, rama `codex/sim-3d-cifras-textos`. Se aplica únicamente [SIM‑3d y las reglas comunes](historia-sim3-resultados-correctos-diseno-para-codex.md). Este documento precede a las nuevas pruebas y a los cambios de interfaz. No acredita todavía rojo, verde, capturas o CI de esta entrega.
+Rama `codex/sim-3d-decimales-continuacion`, main `3b5e822c` con3a/3c fusionadas. La [historia](historia-sim3-resultados-correctos-diseno-para-codex.md) y la [decisión actualizada](sim-3d-decimales-copia-decision-2026-11-23.md) sustituyen el contrato2/Todos anterior.
 
-## Comportamiento y reutilización
+## Cambio más pequeño completo
 
-En Más estadísticas se sustituirá el formato local de doce cifras significativas por `formatNumber(value,{maximumFractionDigits:2})`, el mismo que ya usa `CsvStatistics`. Son **hasta dos decimales**, con punto decimal, sin redondear el resultado almacenado ni los valores originales. Perfil, Frecuencias y Distribución conservarán el valor completo calculado en `title` mediante `String(value)`; null seguirá como «—». Correlación comparte hoy el mismo formateador: se propone mantener también allí la regla común de dos decimales, conservando su valor completo. El cálculo, las peticiones y los informes no cambian. «Completo» significa la representación del resultado numérico existente, no precisión matemática infinita.
+1. Reutilizar formatNumber/Intl y el formateador puro común; añadir el tipo conocido de métrica, sin detector nuevo. Copia/ayuda usan String del resultado, no15cifras.
+2. Reutilizar Settings/schema/default/patch/store/eventos y fila de Apariencia para auto/all. App pasa solo preferencia/callback a AnalysisWorkspace; El formato no necesita IPC nuevo.
+3. Los cinco consumidores de Análisis comparten el formato: Información, Estadísticas/Describe, Más estadísticas y Gráficos (tabla y texto de tendencia). La tendencia mantendrá sus números marcados para copiar; el informe Markdown conserva su serialización completa.
+4. El adaptador de copia existente conserva selección/separadores, queda acotado al panel visible y no interpreta IDs/texto como números.
+5. Conservar los textos estudiantiles ya preparados; completar los motivos conocidos de filas en CsvTable después de3c, con prueba roja propia. undoLimit ya rechaza antes de commitChange: se conserva esa garantía.
 
-La línea de alcance mostrará nombre, ámbito y filas, sin «revisión» ni ordinal innecesario. Los índices que desambiguan las opciones de columna y las revisiones internas permanecen. La frase breve será «Solo lectura: tu archivo no cambia.»; la explicación actual de vacíos, límites, precisión y cancelación pasa a un `details` nativo «Cómo se calcula», cerrado inicialmente. Los avisos reales de error, muestra o cobertura parcial permanecen visibles.
+## Coordinación y validación
 
-Se catalogará «Unificar letras con acento (NFC)» sin cambiar la operación `normalize` ni su algoritmo. Las claves `charts.trend.memory`, `sql.ui.memory` y `sql.ui.sourceMemory` perderán la revisión visible, conservando nombre y filas donde existen. Esto se resuelve en catálogos: no cambia la revisión enviada, las invalidaciones, el motor, los informes ni las ramas de disco/memoria/muestra/conjunto.
+No se desarrollan3b/3e en archivos compartidos hasta congelar este head. Sin cambios de motor, cálculos, límites existentes, dependencias, workflows, guardado de documentos ni tabla fuente. No quitar rutas de pending-files sin migración completa comprobada. La nueva preferencia no existe en main: perfilesv1 sin ella reciben auto, patches de Tema no inyectan defaults, versiones futuras siguen solo lectura.
 
-`empty.error.undoLimit` explicará que el cambio era demasiado grande para poder deshacerlo, no se aplicó y el documento no cambió. La lectura actual de `table-engine.ts` confirma que `emptyPlan` rechaza el presupuesto antes de que `edit` llegue a `commitChange`. La unitaria funcional existente de `tests/table-empty.test.ts`, «rechaza valores, registros escapados, codificación e historial que no caben, antes de modificar», comprueba rechazo de la vista previa por `undoLimit` y snapshot intacto. Es comprobable en el runner nativo de unitarias; **no se ejecutó aquí ni se atribuye un nuevo verde**. El rechazo de aplicación puede comprobarse por la misma ruta sin modificar el límite ni el motor.
+Pruebas primero por bloque; preservar rojos antiguos como históricos. Nuevos casos: extremos0/±1/100,15sig frente a String, copia parcial/múltiple, equivalencia con informe y datos exportados, cambio global sin consultas, persistencia/reset/v1/futuro. Capturas es/en-XA×claro/oscuro×1440×900/1280×720. Al cierre tipos, unitarias completas, E2E completa y build; CI del head final y tiempos Windows, sin atribuir verde a lo no ejecutado.
 
-## Copia exacta: decisión pendiente
+## Siete respuestas originales del ADR0021 · decisión3
 
-No existe copia exacta por valor en `CsvColumnAnalysis` ni en `CsvStatistics`: este último conserva el valor en `title`, pero la selección de texto renderizado se copia literalmente mediante Edición→Copiar o el atajo nativo. Tras redondear, esa ruta copiaría el texto redondeado. Title e informe completo no prueban el requisito «al copiar».
+1. **Does a tool already do this?** Sí: formatNumber/Intl, t/plural, Settings/schema/default/patch/store/eventos, la cabecera AnalysisWorkspace y las tablas existentes. DOM Selection y metadatos de los resultados permiten copiar sin adivinar números. Reutilizar→configurar→integrar antes de desarrollar.
+2. **Is there a skill we can reuse?** El flujo rojo→mínimo→verde y los helpers de Playwright/Electron, persistencia y exportaciones existentes. Las herramientas de desarrollo no se incorporan al runtime del producto.
+3. **Can it be integrated through CLI, API, or MCP?** El puente actual de preferencias y los datos/callbacks de Análisis son suficientes. No nuevo IPC, CLI, API, MCP o acceso del renderer a archivos/clipboard del sistema; la copia usa ClipboardEvent nativo acotado.
+4. **How mature, secure, and maintained is it (release cadence, maintainers, license)?** Intl y DOM estándar, componentes internos MIT y dependencias ya fijadas. No biblioteca, servicio o carga remota nuevos. Se conservan aislamiento, settings futuros, originales y exportaciones.
+5. **What maintenance cost does it add?** Un campo persistido compatible, un selector/fila de Ajustes que comparten valor, helpers puros pequeños y presentación/metadatos comunes. El coste delicado es preservar la selección y los separadores: queda cubierto por E2E nativa, no por un parser genérico de texto.
+6. **What is the minimum glue LAB must write?** Una política de formato/copia, conectar la preferencia existente a los consumidores indicados y un adaptador DOM limitado a la raíz visible. LAB no cambia. No otro motor, esquema de resultados, caché, almacenamiento renderer o detector de tipos.
+7. **Does writing our own code add value?** Sí: evita cifras pequeñas presentadas como cero y permite presentación legible y copia coherente conservando datos crudos. Rehacer formato internacional, Settings, matemática, exportación o clipboard global no aporta valor y no se propone.
 
-La consulta asíncrona al propietario sigue pendiente. No se implementará ninguna parte dependiente de esa respuesta. La propuesta acotada es conservar la ruta nativa y decidir si una selección completa de un solo valor numérico debe copiar `String(resultado)` mediante el evento local `copy`; las selecciones parciales, múltiples y porcentajes necesitan una regla explícita. No se añade API genérica, IPC, botón, permiso de portapapeles ni interceptación global. Tampoco se presenta la copia redondeada como cumplimiento del contrato exacto. La decisión y su prueba real se incorporarán antes de desarrollar ese bloque.
+## Ampliación autorizada: CSV/JSON de Estadísticas
 
-## Motivos conocidos y coordinación de archivos
+El propietario eligió explícitamente «Añadir CSV/JSON a Estadísticas en esta entrega» al comprobar que hoy solo exporta Markdown. No se afirma cobertura de un formato inexistente.
 
-Limpiar ▾ **ya** muestra `charts.toolbar.columnRequired` cuando falta la celda de columna; se reutiliza esa razón de B y sus guardas. No se añade el comportamiento fuera de alcance de tomar una columna marcada por casilla. Las acciones de filas que necesitan marcas recibirán el motivo concreto correspondiente; el fallback será «Esta acción no está disponible con la selección actual.». Readonly, protección y ocupado conservan prioridad.
+Se reutiliza `exportResult`: selector nativo, validación de destinos, protección de fuentes/proyectos, escritura atómica y pareja CSV/contexto con reserva y recuperación. La única capacidad nueva es `exportStatisticsResult`, con petición tipada y validada, matriz acotada de resultados ya calculados y contexto de muestra/vista/parcial. No recibe ruta ni contenido libre de archivo. Fuente, revisión y cambios pendientes se obtienen en main y se revalidan antes de escribir; no se modifica el documento original. JSON/contexto conserva nulos; CSV conserva el valor completo y protege fórmulas textuales, explícito en ayuda/metadatos. El snapshot no es una prueba criptográfica de autenticidad matemática del renderer; los tests comparan con el motor/informe y con los datos de pantalla.
 
-`CsvTable.svelte` no se editará en este carril hasta que SIM‑3a y SIM‑3c estén fusionados y se incorpore main normalmente. La propuesta privada de motivos utiliza únicamente `CsvCommand.disabledReason`, que ya existe, y el patrón de descripción accesible de sus otros consumidores. No duplica selección, operaciones ni validación. Se coordinará además con la serie 3a→3b→3e.
+### Siete respuestas ADR0021 para esta ampliación
 
-Fuente propia prevista: `CsvColumnAnalysis.svelte`, el texto puntual de `CsvTransform.svelte`, catálogos es/en y, si conserva una frase contradictoria de «contexto», el estado de `CsvCommands.svelte`. `CsvStatistics` se toma como referencia. App, Tree y style pertenecen a 3c y quedan fuera. Las claves compartidas se integrarán por bloque para no pisar el trabajo de otras partes. En‑XA se genera del inglés existente; no hay tercer catálogo.
-
-No se retira una ruta de `pending-files.json` por cambiar unas frases. ColumnAnalysis, Transform y Commands conservan textos heredados; sus helpers también tienen explicaciones anteriores. Solo se retirará un archivo si su migración completa queda demostrada por inventario y guard. No se amplía este alcance a traducir motores o informes para justificar esa retirada.
-
-## Pruebas primero y límites
-
-La roja de formato debe alcanzar el componente real: Perfil con fracciones visibles, Frecuencias con porcentaje fraccionario y Distribución con límites fraccionarios. Después comprobará como máximo dos decimales, `title` completo, datos y disco intactos. Una prueba pura de `formatNumber` fija el contrato del helper, pero ya puede pasar en la base y **no sustituye** la roja del wiring. Se reutilizan fixtures y helpers existentes antes de crear otro CSV.
-
-`descriptive-percentiles.spec.ts` contiene expectativas del formato anterior en Perfil: se adaptará solo esa presentación conservando los mismos valores, datos crudos, informe y archivo original. Las pruebas de informes conservan `String(value)` y ausencia de mutación. Ninguna prueba se propone borrar en esta preparación.
-
-Los textos nuevos se comprobarán en es, en y en‑XA; habrá teclado para el detalle nativo, ámbitos reales y prueba de revisión interna conservada. El rechazo undoLimit y los motivos conocidos tendrán oráculos del estado sin modificación. La prueba de copia usará la ruta nativa y el portapapeles real únicamente tras resolver su semántica; no un mock que esconda el valor copiado.
-
-Raíz ejecuta la GUI y conserva rojo antes de producto. Se requieren capturas claro/oscuro, es/en‑XA y 1440×900/1280×720. Después se comprobarán consumidores y las suites correspondientes; al cierre de integración, tipos, unitarias completas, E2E completa y build según CONTRIBUTING. El PR documentará el SHA, omisiones, reintentos y límites reales, y la CI de tres plataformas con duración de ambas partes Windows. Sin dependencias nuevas, cambios de plazos/retries, mezcla de verdes entre SHAs, fusiones o actualización de la app instalada.
-
-## Siete respuestas del ADR 0021 · decisión 3
-
-1. **Does a tool already do this?** Sí: `formatNumber`/Intl, `t`/plural, title, `details`/`summary`, `CsvCommand.disabledReason` y los informes existentes. Se reutilizan y configuran esas piezas; no se crea otro formato ni un sistema de menús o cifras.
-2. **Is there a skill we can reuse?** Se reutilizan el flujo rojo→cambio mínimo→verde y los helpers de Playwright/Electron para teclado, datos y geometría. Las herramientas de desarrollo no entran en el producto ni se vuelven dependencias de ejecución.
-3. **Can it be integrated through CLI, API, or MCP?** Bastan los datos, callbacks y elementos DOM actuales. No hace falta otro IPC, CLI, API o MCP. La copia pendiente, si se aprueba, se limita a la interacción nativa y al componente, sin acceso genérico al sistema.
-4. **How mature, secure, and maintained is it (release cadence, maintainers, license)?** Se usan Intl y DOM estándar, componentes internos MIT y dependencias ya fijadas. Sin cargas remotas, bibliotecas nuevas ni datos privados. Se conservan el aislamiento renderer/main y los contratos de CSV.
-5. **What maintenance cost does it add?** Texto catalogado, atributos y condiciones de presentación, más sus consumidores. No hay caché, persistencia, timer, detector o segundo modelo numérico. El coste de copia se acota mediante la decisión pendiente antes de escribirla.
-6. **What is the minimum glue LAB must write?** Conectar el formateador y title existentes, plegar la explicación, ajustar las claves señaladas y aprovechar metadatos de motivos ya disponibles. LAB no cambia; tampoco cálculo, SQL, historial, original, informes o exportación.
-7. **Does writing our own code add value?** El pegamento limitado hace legibles las cifras y explica qué hacer sin ocultar el valor completo ni los rechazos. Reimplementar formato, cálculo o clipboard global no aporta valor y queda fuera del alcance.
+1. Ya existen exportResult, serializadores CSV/JSON, describeTable y campos de estadísticas. Se reutilizan; no otro sistema de guardado.
+2. Se conservan rojo→mínimo→verde, revisión de límites/seguridad y fixtures de estadísticas existentes.
+3. La función de exportación segura es interna de main y todavía no sirve estos resultados: se añade solo una operación limitada al puente actual, sin CLI, red ni escritura genérica.
+4. Zod, CSV y la escritura atómica ya están instalados y probados. Sin dependencia ni licencia nueva; se mantienen defensas de destino y proyectos.
+5. Coste adicional: serializador/validación acotados y adaptadores de las tres vistas estadísticas, con tests de precisión, nulos, fórmulas, revisión y cancelación del selector.
+6. Código propio mínimo: construir una matriz desde el resultado existente, validar la petición y delegar la escritura a exportResult. No recalcular, parsear Markdown ni duplicar exportadores.
+7. Aporta salida reutilizable fuera de la app sin depender del redondeo visual; esta capacidad sí fue solicitada y aprobada por el propietario.
