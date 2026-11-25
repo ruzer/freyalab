@@ -1,10 +1,12 @@
 import {execFileSync} from 'node:child_process'
-import {readFileSync} from 'node:fs'
+import {mkdtempSync,readFileSync,rmSync} from 'node:fs'
 import {createRequire} from 'node:module'
-import {dirname} from 'node:path'
+import {tmpdir} from 'node:os'
+import {dirname,join} from 'node:path'
 import {expect,it} from 'vitest'
+import {areaCommand} from '../scripts/ci-e2e-area.mjs'
 import {blockingTimeout} from './helpers/blocking-timeout'
-import {expression,matrix,verifySteps,workflow} from './helpers/ci-workflow'
+import {expression,matrix,verifySteps,workflow,type MatrixJob} from './helpers/ci-workflow'
 
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
 const require=createRequire(import.meta.url)
@@ -50,21 +52,25 @@ it('Intel conserva las identidades de desarrollo en dos partes y prueba el paque
  expect([...first,...second,...perf].sort()).toEqual(all)
 })
 
-it('Ubuntu solo reparte los push y conserva la misma selección de pruebas que Intel',()=>{
+it('Ubuntu reparte PR con y sin paquete y push sin cambiar la selección de pruebas',()=>{
  const [scheduled,pr,push]=matrices.map(rows=>rows.filter(job=>job.os==='ubuntu-24.04'))
  expect(scheduled).toEqual([])
- expect(pr).toEqual([{os:'ubuntu-24.04',executable:'release/linux-unpacked/freyalab'}])
+ expect(pr).toEqual(push)
+ expect(matrix('pull_request',false).filter(job=>job.os==='ubuntu-24.04')).toEqual([
+  {os:'ubuntu-24.04',part:'shell-md',projects:'--project=shell --project=md'},
+  {os:'ubuntu-24.04',part:'csv',projects:'--project=csv'},
+ ])
  expect(push.map(job=>[job.part,job.projects,job.executable])).toEqual([
   ['shell-md','--project=shell --project=md',undefined],
   ['csv-package','--project=csv','release/linux-unpacked/freyalab']
  ])
- // La prueba anterior enumera los dos mismos filtros y la fase serial completa.
+ // La comprobación de identidades enumera estos mismos filtros y la fase serial completa.
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  expect(workflow).toMatch(/name: E2E perf and solo \(Linux\)\n\s*if: [^\n]*matrix\.part != 'shell-md'/)
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo\n/)
 })
 
-it('Windows conserva todas las identidades: rápidas por proyecto y serial completo una sola vez',()=>{
+it.each(['windows-2025','ubuntu-24.04'])('%s conserva todas las identidades: rápidas por proyecto y serial completo una sola vez',os=>{
  const all=list().sort(),fast=selection('test:e2e:fast'),serial=list(...selection('test:e2e:perf'))
  const first=list(...fast,'--project=shell','--project=md'),second=list(...fast,'--project=csv')
  const union=[...first,...second,...serial]
@@ -73,8 +79,102 @@ it('Windows conserva todas las identidades: rápidas por proyecto y serial compl
  expect(new Set(union).size).toBe(union.length)
  expect(union.sort()).toEqual(all)
  for(const [event,pack] of [['pull_request',true],['pull_request',false],['push',true]] as const){
-  expect(matrix(event,pack).filter(job=>job.os==='windows-2025').map(job=>job.projects))
+  expect(matrix(event,pack).filter(job=>job.os===os).map(job=>job.projects))
    .toEqual(['--project=shell --project=md','--project=csv'])
+ }
+})
+
+function step(name:string){
+ const found=verifySteps().find(item=>item.name===name)
+ if(!found)throw new Error('Falta el paso '+name)
+ return found
+}
+type Plan={full:boolean;e2e:string[]}
+function ubuntuContext(job:MatrixJob,pack:boolean,plan:Plan,fast='success'){
+ const context={github:{event_name:'pull_request'},matrix:job,runner:{os:'Linux'}}
+ const selector=step('Select Windows PR projects')
+ const directory=mkdtempSync(join(tmpdir(),'freyalab-ci-ubuntu-')),output=join(directory,'output')
+ let outputs={fast:'',serial:''},outcome='skipped'
+ try{
+  if(expression(selector.condition,context)){
+   const code=selector.block.match(/node --input-type=module -e "([\s\S]+?)"\s*$/)?.[1]
+   if(!code)throw new Error('Falta el selector real de proyectos.')
+   execFileSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',stdio:['ignore','pipe','pipe'],
+    env:{...process.env,FREYALAB_CI_AREAS:JSON.stringify(plan),FREYALAB_CI_PROJECTS:job.projects,GITHUB_OUTPUT:output}})
+   outputs=Object.fromEntries(readFileSync(output,'utf8').trim().split('\n').map(line=>{
+    const separator=line.indexOf('=')
+    return [line.slice(0,separator),line.slice(separator+1)]
+   })) as typeof outputs
+   outcome='success'
+  }
+ }finally{rmSync(directory,{recursive:true,force:true})}
+ return {...context,env:{FREYALAB_E2E_FAST_WORKERS:'1'},needs:{areas:{outputs:{package:String(pack)}}},
+  steps:{windows_projects:{outputs,outcome},e2e_fast_pr:{outcome:outputs.fast?fast:'skipped'},e2e_fast_linux:{outcome:'skipped'}},
+  cancelled:()=>false}
+}
+function ubuntuCommand(name:string,values:ReturnType<typeof ubuntuContext>){
+ const run=step(name).block.match(/^        run: (.+)$/m)?.[1]
+ if(!run)throw new Error('Falta el comando '+name)
+ return run.replace(/\$\{\{([\s\S]*?)\}\}/g,(_,code:string)=>String(expression(code,values)??'')).trim().split(/\s+/)
+}
+const plans:Plan[]=[{full:false,e2e:[]},{full:false,e2e:['shell']},{full:false,e2e:['shell','md']},{full:false,e2e:['shell','csv']},{full:true,e2e:['shell','md','csv']}]
+it.each([false,true])('Ubuntu PR paquete=%s intersecta áreas y ejecuta serial solo en CSV, incluso sin rápidas CSV',pack=>{
+ const jobs=matrix('pull_request',pack).filter(job=>job.os==='ubuntu-24.04')
+ expect(jobs).toHaveLength(2)
+ for(const plan of plans){
+  const original=areaCommand(JSON.stringify(plan),[]).slice(2)
+  const values=jobs.map(job=>ubuntuContext(job,pack,plan))
+  const fast=values.flatMap(value=>value.steps.windows_projects.outputs.fast.split(' ').filter(Boolean))
+  expect(fast.sort()).toEqual([...original].sort());expect(new Set(fast).size).toBe(fast.length)
+  for(const value of values){
+   const active=!!expression(step('E2E fast (PR areas)').condition,value),outputs=value.steps.windows_projects.outputs
+   expect(active).toBe(outputs.fast!=='')
+   if(active)expect(ubuntuCommand('E2E fast (PR areas)',value)).toEqual([
+    'xvfb-run','-a','npm','run','test:e2e:fast','--','--workers=1','--output=test-results-fast',...outputs.fast.split(' '),
+   ])
+  }
+  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[0])).toBe(false)
+  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[1])).toBe(true)
+  expect(ubuntuCommand('E2E perf and solo (PR areas)',values[1])).toEqual([
+   'xvfb-run','-a','npm','run','test:e2e:perf','--','--workers=1','--output=test-results-solo',...original,
+  ])
+  // Perf construye también cuando la intersección rápida CSV está vacía, antes del paquete Linux.
+  expect(scripts['test:e2e:perf']).toMatch(/^npm run build && /)
+  for(const [index,value] of values.entries()){
+   for(const name of ['run: npm run check','run: npm test','Large-file editor experiments (correctness on small hostile fixtures)']){
+    expect(!!expression(step(name).condition,value)).toBe(index===0)
+   }
+   expect(!!expression(step('Package application directory').condition,value)).toBe(pack&&index===1)
+  }
+ }
+})
+it('Ubuntu no pierde serial ante fallo rápido ni la ejecuta con selector fallido u omitido o cancelación',()=>{
+ const job=matrix('pull_request',true).find(job=>job.os==='ubuntu-24.04'&&job.part==='csv-package')
+ expect(job).toBeDefined()
+ const serial=step('E2E perf and solo (PR areas)').condition
+ const full:Plan={full:true,e2e:['shell','md','csv']}
+ const failed=ubuntuContext(job!,true,full,'failure')
+ expect(!!expression(serial,failed)).toBe(true)
+ expect(!!expression(serial,{...failed,cancelled:()=>true})).toBe(false)
+ for(const outcome of ['failure','skipped']){
+  const missing=ubuntuContext(job!,true,{full:false,e2e:['shell','md']})
+  missing.steps.windows_projects.outcome=outcome
+  expect(!!expression(serial,missing)).toBe(false)
+ }
+})
+it('Ubuntu conserva 45 minutos y un worker, y cada confirmación la produce solo su parte aprobada',()=>{
+ const timeout=workflow.match(/^    timeout-minutes: (.+)$/m)?.[1],workers=workflow.match(/^      FREYALAB_E2E_FAST_WORKERS: (.+)$/m)?.[1]
+ expect(timeout).toBeDefined();expect(workers).toBeDefined()
+ for(const pack of [true,false])for(const job of matrix('pull_request',pack).filter(job=>job.os==='ubuntu-24.04')){
+  expect(expression(timeout!,{matrix:job,startsWith:(text:string,prefix:string)=>text.startsWith(prefix)})).toBe(45);expect(expression(workers!,{matrix:job})).toBe('1')
+ }
+ for(const [output,parts] of [['ubuntu_shell_md',['shell-md']],['ubuntu_csv',['csv','csv-package']]] as const){
+  const source=workflow.match(new RegExp('^      '+output+': (.+)$','m'))?.[1]
+  expect(source).toBeDefined()
+  for(const pack of [true,false])for(const job of matrix('pull_request',pack))for(const status of ['success','failure','cancelled','skipped']){
+   expect(expression(source!,{github:{event_name:'pull_request'},matrix:job,job:{status}}))
+    .toBe(job.os==='ubuntu-24.04'&&(parts as readonly string[]).includes(job.part??'')&&status==='success'?'passed':'')
+  }
  }
 })
 

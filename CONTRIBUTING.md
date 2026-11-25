@@ -29,7 +29,7 @@ Las unitarias funcionales y sus hooks comparten un límite de bloqueo de **120 s
 
 Cada ejecución de Playwright en CI se detiene tras tres fallos definitivos. El cierre de Electron de prueba intenta salir normalmente y, tras cinco segundos sin confirmación, termina el proceso de esa prueba si sigue activo.
 
-En los PR solo documentales, Gate comprueba el plan y que Verify se haya omitido. Las capturas y otros resultados de evidencia cuentan como documentación. Para cambios de código, unitarias o entradas de pruebas, Verify ejecuta tipos, todas las unitarias y E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
+En los PR solo documentales, Gate comprueba el plan y que Verify se haya omitido. Las capturas y otros resultados de evidencia cuentan como documentación. Para cambios de código, unitarias o entradas de pruebas, Verify ejecuta tipos y todas las unitarias una vez por plataforma en `shell-md`, además de las E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
 
 ```bash
 set -o pipefail
@@ -37,7 +37,9 @@ plan=$(git diff --name-only --no-renames -z origin/main...HEAD | node scripts/ci
   npm run test:e2e:area -- "$plan"
 ```
 
-El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las tres plataformas. La aceptación de CI-1b no modifica la protección.
+Ubuntu reparte los PR y `main` en `shell-md` y `csv`. En los PR, cada parte intersecta sus proyectos con las áreas seleccionadas; `csv-package` sustituye a `csv` cuando se necesita el paquete Linux; en `main` siempre se usa `csv-package`. La fase perf/solo completa del plan corre una sola vez en CSV, incluso si ese PR no selecciona rápidas de CSV. Las dos partes conservan 45 minutos por job. Windows y macOS Apple silicon también reparten las rápidas por proyecto; su fase serial permanece en `shell-md`.
+
+El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las seis partes de desarrollo de las tres plataformas, además del resultado global de la matriz que incluye los paquetes requeridos. La aceptación de CI-1b no modifica la protección.
 
 En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo en tres jobs paralelos. `shell-md` ejecuta tipos, unitarias y rápidas de Shell/Markdown, `csv` ejecuta rápidas de CSV y toda la fase perf/solo, y `package` construye y prueba la aplicación empaquetada. Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
 

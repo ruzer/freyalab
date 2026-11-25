@@ -67,15 +67,15 @@ jobs:
       fail-fast: false
       matrix:
         # Windows reparte rápidas por proyecto; shell-md conserva serial y paquete para equilibrar la corrida lenta.
-        # Intel reparte main/nocturna; Ubuntu reparte main; ARM reparte desarrollo y conserva el paquete separado.
+        # Intel reparte main/nocturna; Ubuntu reparte PR/main con serial y paquete en CSV; ARM conserva el paquete separado.
         include: >-
           ${{ fromJSON(
             github.event_name == 'schedule' &&
             '[{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' && needs.areas.outputs.package == 'true' &&
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' &&
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"}]' ||
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv","projects":"--project=csv"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"}]' ||
             '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
           ) }}
     runs-on: ${{ matrix.os }}
@@ -83,12 +83,13 @@ jobs:
       FREYALAB_E2E_FAST_WORKERS: ${{ matrix.os == 'macos-15' && '2' || '1' }}
     # Gate exige la confirmación de las tres plataformas, incluso si una queda cancelada en cola.
     outputs:
-      ubuntu: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && job.status == 'success' && 'passed' || '' }}
+      ubuntu_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
+      ubuntu_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && (matrix.part == 'csv' || matrix.part == 'csv-package') && job.status == 'success' && 'passed' || '' }}
       windows_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
       windows_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
       macos_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
       macos_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
-    # Las partes Intel conservan el límite del job anterior. Ubuntu completo (PR) tiene 60 como Windows; sus partes de main, 45.
+    # Las partes Intel conservan 90 minutos; las partes Ubuntu de PR/main, 45.
     timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-') || !matrix.part) && 60 || 45) }}
     steps:
       - uses: actions/checkout@v4
@@ -123,7 +124,7 @@ jobs:
         run: node --test experiments/large-file-editor/tests/overlay.test.mjs
       - run: npm run licenses
         if: matrix.executable
-      # El selector existente también intersecta las partes ARM; se conserva su id.
+      # El selector existente intersecta las partes Windows, ARM y Ubuntu; se conserva su id.
       - name: Select Windows PR projects
         id: windows_projects
         if: github.event_name == 'pull_request' && matrix.projects
@@ -158,8 +159,9 @@ jobs:
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
         run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
+      # Un PR sin CSV omite sus rápidas, pero conserva la fase serial del plan en la parte CSV de Ubuntu.
       - name: E2E perf and solo (PR areas)
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && matrix.part != 'package' && (!matrix.projects || matrix.part == 'shell-md') && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && ((runner.os == 'Linux' && (matrix.part == 'csv' || matrix.part == 'csv-package')) || (runner.os != 'Linux' && matrix.part == 'shell-md')) && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure' || (steps.e2e_fast_pr.outcome == 'skipped' && steps.windows_projects.outcome == 'success' && steps.windows_projects.outputs.fast == '' && steps.windows_projects.outputs.serial != '')) }}
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
@@ -227,14 +229,15 @@ jobs:
           AREAS_RESULT: ${{ needs.areas.result }}
           DOCS_ONLY: ${{ needs.areas.outputs.docs_only }}
           VERIFY_RESULT: ${{ needs.verify.result }}
-          UBUNTU: ${{ needs.verify.outputs.ubuntu }}
+          UBUNTU_SHELL_MD: ${{ needs.verify.outputs.ubuntu_shell_md }}
+          UBUNTU_CSV: ${{ needs.verify.outputs.ubuntu_csv }}
           WINDOWS_SHELL_MD: ${{ needs.verify.outputs.windows_shell_md }}
           WINDOWS_CSV: ${{ needs.verify.outputs.windows_csv }}
           MACOS_SHELL_MD: ${{ needs.verify.outputs.macos_shell_md }}
           MACOS_CSV: ${{ needs.verify.outputs.macos_csv }}
         run: |
-          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU/$WINDOWS_SHELL_MD/$WINDOWS_CSV/$MACOS_SHELL_MD/$MACOS_CSV" in
-            success/true/skipped/////|success/false/success/passed/passed/passed/passed/passed) exit 0 ;;
+          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU_SHELL_MD/$UBUNTU_CSV/$WINDOWS_SHELL_MD/$WINDOWS_CSV/$MACOS_SHELL_MD/$MACOS_CSV" in
+            success/true/skipped//////|success/false/success/passed/passed/passed/passed/passed/passed) exit 0 ;;
           esac
-          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows shell/md: ${WINDOWS_SHELL_MD:-sin éxito}. Windows CSV: ${WINDOWS_CSV:-sin éxito}. macOS shell/md: ${MACOS_SHELL_MD:-sin éxito}. macOS CSV: ${MACOS_CSV:-sin éxito}."
+          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu shell/md: ${UBUNTU_SHELL_MD:-sin éxito}. Ubuntu CSV: ${UBUNTU_CSV:-sin éxito}. Windows shell/md: ${WINDOWS_SHELL_MD:-sin éxito}. Windows CSV: ${WINDOWS_CSV:-sin éxito}. macOS shell/md: ${MACOS_SHELL_MD:-sin éxito}. macOS CSV: ${MACOS_CSV:-sin éxito}."
           exit 1
