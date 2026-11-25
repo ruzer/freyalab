@@ -111,7 +111,7 @@ it.each([['push','ubuntu-24.04'],['schedule','macos-15-intel'],['workflow_dispat
    }
   }
   expect(selected).toEqual(['shell-md'])
-  expect(serial.block).toMatch(/test:e2e:perf -- --workers=1 --output=test-results-solo\n/)
+  expect(serial.block).toMatch(/test:e2e:perf -- --workers=1 --output=test-results-solo(?:\n|$)/)
  })
 
 function step(name:string){

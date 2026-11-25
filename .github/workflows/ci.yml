@@ -67,8 +67,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Windows reparte rápidas por proyecto; shell-md conserva serial y paquete para equilibrar la corrida lenta.
-        # Intel solo en nocturna/manual sobre main; Ubuntu reparte PR/main con serial y paquete en CSV; ARM conserva el paquete separado.
+        # Todas las plataformas ejecutan perf/solo en shell-md; Ubuntu conserva el paquete en CSV y Windows en shell-md.
+        # Intel solo en nocturna/manual sobre main; ARM e Intel conservan el paquete separado.
         include: >-
           ${{ fromJSON(
             (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
@@ -90,8 +90,8 @@ jobs:
       windows_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
       macos_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
       macos_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
-    # Las partes Intel conservan 90 minutos; las partes Ubuntu de PR/main, 45.
-    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-') || !matrix.part) && 60 || 45) }}
+    # Ubuntu y Windows: 60 minutos; Intel conserva 90 y ARM, 75.
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'ubuntu-24.04' || matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-') || !matrix.part) && 60 || 45) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -160,25 +160,26 @@ jobs:
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
         run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
-      # Un PR sin CSV omite sus rápidas, pero conserva la fase serial del plan en la parte CSV de Ubuntu.
+      # Shell siempre forma parte del plan de código: serial completa una vez, incluso en un PR sin CSV.
       - name: E2E perf and solo (PR areas)
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && ((runner.os == 'Linux' && (matrix.part == 'csv' || matrix.part == 'csv-package')) || (runner.os != 'Linux' && matrix.part == 'shell-md')) && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure' || (steps.e2e_fast_pr.outcome == 'skipped' && steps.windows_projects.outcome == 'success' && steps.windows_projects.outputs.fast == '' && steps.windows_projects.outputs.serial != '')) }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && matrix.part == 'shell-md' && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run ${{ matrix.projects && 'test:e2e:perf' || 'test:e2e:area' }} -- ${{ !matrix.projects && '--phase=serial' || '' }} --workers=1 --output=test-results-solo ${{ matrix.projects && steps.windows_projects.outputs.serial || '' }}
       - name: E2E perf and solo (Linux)
-        if: ${{ !cancelled() && runner.os == 'Linux' && matrix.part != 'shell-md' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && matrix.part == 'shell-md' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo
       - name: E2E perf and solo (macOS and Windows)
-        if: ${{ !cancelled() && runner.os != 'Linux' && (((runner.os == 'Windows' || matrix.os == 'macos-15') && matrix.part == 'shell-md') || (runner.os != 'Windows' && matrix.os != 'macos-15' && matrix.part != 'shell-md')) && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
+        if: ${{ !cancelled() && runner.os != 'Linux' && matrix.part == 'shell-md' && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo
+      # Si un PR no elige CSV, su máquina de paquete necesita construir aunque las rápidas se omitan.
       - run: npm run build
-        if: ${{ (success() && matrix.part == 'package') || (!cancelled() && runner.os == 'Windows' && matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')) }}
+        if: ${{ (success() && matrix.part == 'package') || (!cancelled() && runner.os == 'Windows' && matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')) || (!cancelled() && success() && runner.os == 'Linux' && matrix.part == 'csv-package' && github.event_name == 'pull_request' && needs.areas.outputs.package == 'true' && steps.e2e_fast_pr.outcome == 'skipped' && steps.windows_projects.outcome == 'success' && steps.windows_projects.outputs.fast == '') }}
       - name: Package application directory
         id: package
         if: ${{ (success() || (!cancelled() && runner.os == 'Windows')) && matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true') }}
