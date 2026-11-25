@@ -119,7 +119,8 @@ it('ARM mantiene 75 minutos, dos workers rápidos y un worker serial',()=>{
 
 it('repartir ARM no traslada la fase serial de Intel ni incorpora Intel a los PR',()=>{
  expect(matrix('pull_request',true).filter(job=>job.os==='macos-15-intel')).toEqual([])
- for(const event of ['push','schedule']){
+ expect(matrix('push',true).filter(job=>job.os==='macos-15-intel')).toEqual([])
+ for(const event of ['schedule','workflow_dispatch']){
   const jobs=matrix(event,true).filter(job=>job.os==='macos-15-intel'),serial='E2E perf and solo (macOS and Windows)'
   expect(jobs.map(job=>job.part)).toEqual(['shell-md','csv','package'])
   for(const job of jobs)expect(selected(job,event,true).includes(serial)).toBe(job.part==='csv')
