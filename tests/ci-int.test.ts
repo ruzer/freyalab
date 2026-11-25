@@ -64,7 +64,7 @@ it('Ubuntu reparte PR con y sin paquete y push sin cambiar la selección de prue
   ['shell-md','--project=shell --project=md',undefined],
   ['csv-package','--project=csv','release/linux-unpacked/freyalab']
  ])
- // La prueba anterior enumera los dos mismos filtros y la fase serial completa.
+ // La comprobación de identidades enumera estos mismos filtros y la fase serial completa.
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  expect(workflow).toMatch(/name: E2E perf and solo \(Linux\)\n\s*if: [^\n]*matrix\.part != 'shell-md'/)
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo\n/)
