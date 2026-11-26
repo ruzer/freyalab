@@ -31,6 +31,8 @@ async function registeredSubset(){
  const create=page.getByRole('dialog',{name:tr('project.new'),exact:true})
  await create.getByRole('button',{name:tr('project.pickFolder'),exact:true}).press('Enter')
  await create.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
+ // El evento publica el proyecto antes de cerrar el modal de creación.
+ await expect(create).toHaveCount(0)
  const add=panel().getByRole('button',{name:tr('project.source.add'),exact:true});await expect(add).toBeEnabled();await add.press('Enter')
  const registration=page.getByRole('dialog',{name:tr('project.source.add'),exact:true})
  await expect(registration.getByRole('listitem')).toHaveText(['ID','Entidad','Edad','Ingreso','Nota'])

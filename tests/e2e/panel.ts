@@ -111,6 +111,8 @@ export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'
  await expect(fields.locator('.field-list')).toHaveAttribute('aria-busy','false')
  if(keyboard)await entry.press('Shift+F10')
  else{
+  // Mantiene :focus-within si otra ventana mueve el puntero tras el hover.
+  await entry.focus()
   await entry.hover()
   await entry.getByRole('button',{name:await translated(page,'charts.fields.more',{field}),exact:true}).click()
  }
