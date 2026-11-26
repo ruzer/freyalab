@@ -81,7 +81,7 @@ jobs:
           ) }}
     runs-on: ${{ matrix.os }}
     env:
-      FREYALAB_E2E_FAST_WORKERS: ${{ matrix.os == 'macos-15' && '2' || '1' }}
+      FREYALAB_E2E_FAST_WORKERS: ${{ (matrix.os == 'macos-15' || matrix.os == 'ubuntu-24.04' || matrix.os == 'windows-2025') && '2' || '1' }}
     # Gate exige la confirmación de las tres plataformas, incluso si una queda cancelada en cola.
     outputs:
       ubuntu_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}

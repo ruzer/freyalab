@@ -146,6 +146,8 @@ it('las partes Windows conservan 60 minutos, dos workers rápidos, uno serial y 
  expect(step('E2E perf and solo (macOS and Windows)').block).toContain('run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo')
  expect(workflow).not.toMatch(/--(?:retries|repeat-each|pass-with-no-tests)\b/)
  expect(readFileSync(new URL('../playwright.config.ts',import.meta.url),'utf8')).toContain('retries: process.env.CI ? 1 : 0')
+ expect(readFileSync(new URL('../playwright.config.ts',import.meta.url),'utf8')).toContain('workers: 1')
+ expect(step(packageName).block).not.toMatch(/--workers/)
 })
 
 it('cada confirmación Windows solo la puede producir su propia parte aprobada',()=>{
