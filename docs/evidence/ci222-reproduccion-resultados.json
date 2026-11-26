@@ -1,0 +1,1311 @@
+{
+  "base": "2e9e2d87c110377da93c875dd4b056b67ba59887",
+  "platform": "darwin-arm64",
+  "node": "24.22.1",
+  "playwright": "1.64.1",
+  "runs": [
+    {
+      "run": "baseline-w1",
+      "summary": [
+        "  10 passed (37.5s)"
+      ],
+      "cases": [
+        "  ✓   1 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.8s)",
+        "  ✓   2 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   5 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓   6 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.6s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)"
+      ],
+      "hover": []
+    },
+    {
+      "run": "baseline-w2",
+      "summary": [
+        "  15 passed (28.9s)"
+      ],
+      "cases": [
+        "  ✓   2 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   1 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   6 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.4s)",
+        "  ✓   5 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.3s)",
+        "  ✓  11 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  13 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓  12 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  14 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  15 [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)"
+      ],
+      "hover": []
+    },
+    {
+      "run": "controlled-red-w1",
+      "summary": [
+        "  5 failed"
+      ],
+      "cases": [
+        "  ✘  1 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (31.3s)",
+        "  ✘  2 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (31.1s)",
+        "  ✘  3 [csv] › tests/e2e/csv-text.spec.ts:182:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (16.1s)",
+        "  ✘  4 [csv] › tests/e2e/project-subset-analysis.spec.ts:278:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (15.9s)",
+        "  ✘  5 [csv] › tests/e2e/project-subset-analysis.spec.ts:278:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (15.9s)"
+      ],
+      "hover": [
+        {
+          "hover": true,
+          "focus": false,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": false,
+          "used": false,
+          "visibility": "hidden"
+        },
+        {
+          "hover": true,
+          "focus": false,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": false,
+          "used": false,
+          "visibility": "hidden"
+        }
+      ],
+      "csvEvents": [
+        {
+          "sequence": 1,
+          "event": "ui:held",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 2,
+          "event": "auxiliary:arrived",
+          "query": {
+            "offset": 0,
+            "limit": 10,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 3,
+          "event": "ui:start",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 4,
+          "event": "ui:error",
+          "error": "Error: Consulta cancelada por una solicitud más reciente."
+        },
+        {
+          "sequence": 5,
+          "event": "pair:settled"
+        },
+        {
+          "sequence": 6,
+          "event": "auxiliary:success"
+        }
+      ],
+      "csvDOM": {
+        "warning": "Consulta no aplicada. Se conserva la última vista válida. Consulta cancelada por una solicitud más reciente. Corrige o limpia la consulta para editar. Reintentar consulta",
+        "rows": 0,
+        "status": "   UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical Encabezado",
+        "headerEditDisabled": true
+      },
+      "project": [
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keyup": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        },
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keyup": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "controlled-red-w2",
+      "summary": [
+        "  5 failed"
+      ],
+      "cases": [
+        "  ✘  1 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (31.1s)",
+        "  ✘  2 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (31.3s)",
+        "  ✘  4 [csv] › tests/e2e/project-subset-analysis.spec.ts:278:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (16.0s)",
+        "  ✘  3 [csv] › tests/e2e/csv-text.spec.ts:182:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (16.3s)",
+        "  ✘  5 [csv] › tests/e2e/project-subset-analysis.spec.ts:278:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (15.9s)"
+      ],
+      "hover": [
+        {
+          "hover": true,
+          "focus": false,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": false,
+          "used": false,
+          "visibility": "hidden"
+        },
+        {
+          "hover": true,
+          "focus": false,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": false,
+          "used": false,
+          "visibility": "hidden"
+        }
+      ],
+      "csvEvents": [
+        {
+          "sequence": 1,
+          "event": "ui:held",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 2,
+          "event": "auxiliary:arrived",
+          "query": {
+            "offset": 0,
+            "limit": 10,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 3,
+          "event": "ui:start",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 4,
+          "event": "ui:error",
+          "error": "Error: Consulta cancelada por una solicitud más reciente."
+        },
+        {
+          "sequence": 5,
+          "event": "pair:settled"
+        },
+        {
+          "sequence": 6,
+          "event": "auxiliary:success"
+        }
+      ],
+      "csvDOM": {
+        "warning": "Consulta no aplicada. Se conserva la última vista válida. Consulta cancelada por una solicitud más reciente. Corrige o limpia la consulta para editar. Reintentar consulta",
+        "rows": 0,
+        "status": "   UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical Encabezado",
+        "headerEditDisabled": true
+      },
+      "project": [
+        {
+          "phase": "released",
+          "operations": [
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "application:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keyup": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        },
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keyup": {
+              "targetTag": "body",
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "controlled-green-w1",
+      "summary": [
+        "  5 passed (18.7s)"
+      ],
+      "cases": [
+        "  ✓  1 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  2 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  3 [csv] › tests/e2e/csv-text.spec.ts:182:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  4 [csv] › tests/e2e/project-subset-analysis.spec.ts:279:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  5 [csv] › tests/e2e/project-subset-analysis.spec.ts:279:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)"
+      ],
+      "hover": [
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        }
+      ],
+      "csvEvents": [
+        {
+          "sequence": 1,
+          "event": "ui:held",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 2,
+          "event": "release:external"
+        },
+        {
+          "sequence": 3,
+          "event": "ui:start",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 4,
+          "event": "ui:success"
+        },
+        {
+          "sequence": 5,
+          "event": "auxiliary:arrived",
+          "query": {
+            "offset": 0,
+            "limit": 10,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 6,
+          "event": "auxiliary:success"
+        }
+      ],
+      "csvDOM": {
+        "rows": 2,
+        "toast": "  Datos de operación no válidos. ",
+        "status": "   UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical Encabezado",
+        "headerEditDisabled": false
+      },
+      "project": [
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state",
+            "project:pickSource",
+            "application:state",
+            "project:registerSource",
+            "project:discardSourceDraft",
+            "application:state",
+            "project:state",
+            "project:saveRecipe",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:renameRecipe",
+            "settings:set",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "close",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "documents",
+            "page"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": null,
+            "keyup": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        },
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state",
+            "project:pickSource",
+            "application:state",
+            "project:registerSource",
+            "project:discardSourceDraft",
+            "application:state",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:saveRecipe",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:renameRecipe",
+            "settings:set",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "close",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "documents",
+            "analyzeColumn",
+            "documents",
+            "page"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": null,
+            "keyup": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "controlled-green-w2",
+      "summary": [
+        "  5 passed (10.6s)"
+      ],
+      "cases": [
+        "  ✓  2 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  3 [csv] › tests/e2e/csv-text.spec.ts:182:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  1 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓  4 [csv] › tests/e2e/project-subset-analysis.spec.ts:279:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.3s)",
+        "  ✓  5 [csv] › tests/e2e/project-subset-analysis.spec.ts:279:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)"
+      ],
+      "hover": [
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": true,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        },
+        {
+          "hover": false,
+          "focus": true,
+          "used": false,
+          "visibility": "visible"
+        }
+      ],
+      "csvEvents": [
+        {
+          "sequence": 1,
+          "event": "ui:held",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 2,
+          "event": "release:external"
+        },
+        {
+          "sequence": 3,
+          "event": "ui:start",
+          "query": {
+            "search": "",
+            "conditions": [],
+            "filterMode": "all",
+            "filters": {},
+            "offset": 0,
+            "limit": 200,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 4,
+          "event": "ui:success"
+        },
+        {
+          "sequence": 5,
+          "event": "auxiliary:arrived",
+          "query": {
+            "offset": 0,
+            "limit": 10,
+            "requestId": 1
+          }
+        },
+        {
+          "sequence": 6,
+          "event": "auxiliary:success"
+        }
+      ],
+      "csvDOM": {
+        "rows": 2,
+        "toast": "  Datos de operación no válidos. ",
+        "status": "   UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical Encabezado",
+        "headerEditDisabled": false
+      },
+      "project": [
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:pickFolder",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state",
+            "project:pickSource",
+            "application:state",
+            "project:registerSource",
+            "project:discardSourceDraft",
+            "application:state",
+            "project:state",
+            "project:saveRecipe",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:renameRecipe",
+            "settings:set",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "close",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "documents",
+            "page"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": null,
+            "keyup": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        },
+        {
+          "phase": "released",
+          "operations": [
+            "settings:get",
+            "settings:migrate",
+            "project:pickFolder",
+            "language",
+            "documents",
+            "application:state",
+            "recents",
+            "application:shortcuts",
+            "recoveries",
+            "project:state",
+            "project:create",
+            "tree",
+            "settings:set",
+            "project:cancelCreate",
+            "application:state",
+            "project:pickSource",
+            "application:state",
+            "project:registerSource",
+            "project:discardSourceDraft",
+            "application:state",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:saveRecipe",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "project:state",
+            "project:saveRecipe",
+            "project:state",
+            "project:renameRecipe",
+            "settings:set",
+            "project:recipeAnalyze",
+            "application:state",
+            "analyzeColumn",
+            "application:state",
+            "close",
+            "application:shortcuts",
+            "application:shortcuts",
+            "analyzeColumn",
+            "analyzeColumn",
+            "documents",
+            "documents",
+            "page"
+          ],
+          "observation": {
+            "initial": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            },
+            "keydown": null,
+            "keyup": {
+              "targetTag": null,
+              "openDialogs": [
+                "Nuevo proyecto"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "final-w1",
+      "summary": [
+        "  50 passed (3.1m)"
+      ],
+      "cases": [
+        "  ✓   1 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓   2 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   5 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓   6 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.6s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.9s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.5s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.4s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.5s)",
+        "  ✓  11 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.8s)",
+        "  ✓  12 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓  13 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓  14 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.1s)",
+        "  ✓  15 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  16 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  17 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  18 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  19 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  20 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  21 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  22 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  23 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  24 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  25 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  26 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  27 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  28 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓  29 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  30 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  31 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  32 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  33 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  34 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  35 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  36 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓  37 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  38 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  39 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  40 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  41 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.6s)",
+        "  ✓  42 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  43 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  44 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  45 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  46 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (7.1s)",
+        "  ✓  47 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.9s)",
+        "  ✓  48 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓  49 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.0s)",
+        "  ✓  50 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.0s)"
+      ],
+      "logSha256": "ecfe16677de3ef69ecec8fabd22ec1ba9e1395c7b58c150e02c951262a8606ee"
+    },
+    {
+      "run": "final-w2",
+      "summary": [
+        "  4 failed",
+        "  46 passed (1.9m)"
+      ],
+      "cases": [
+        "  ✓   2 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   1 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.8s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.1s)",
+        "  ✓   6 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.1s)",
+        "  ✓   5 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.0s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.1s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.8s)",
+        "  ✘  11 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (726ms)",
+        "  ✘  12 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (696ms)",
+        "  ✓  14 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.1s)",
+        "  ✓  13 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  15 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.1s)",
+        "  ✘  17 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (35.7s)",
+        "  ✘  16 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (36.7s)",
+        "  ✓  18 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.4s)",
+        "  ✓  19 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.4s)",
+        "  ✓  20 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  21 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  23 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  24 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  22 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓  25 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  26 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  28 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  27 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  29 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  30 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  31 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  33 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  34 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  32 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  35 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  36 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  38 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  37 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  39 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  40 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  41 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓  43 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  44 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  42 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  45 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  46 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  48 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  47 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  49 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  50 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)"
+      ],
+      "logSha256": "9eed0b3b6d36a6d2a1f3bd42776f25909eea089fe7d3c4d931eb09753a6bdac4",
+      "additionalFailures": [
+        "analysis-sections:198: page/context closed at726ms",
+        "chart-trend:110: page/context closed at696ms",
+        "analysis-sections:214: export status still Preparando motor local",
+        "chart-trend:117->53: trend result absent"
+      ]
+    },
+    {
+      "run": "observed-w2",
+      "summary": [
+        "  50 passed (1.6m)"
+      ],
+      "cases": [
+        "  ✓   2 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓   1 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   6 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓   5 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  11 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  13 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  12 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  14 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  16 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  15 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  18 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  19 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  17 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  20 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  21 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  23 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  22 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  24 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  26 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.4s)",
+        "  ✓  25 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓  28 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  29 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  27 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  30 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  31 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  33 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  32 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  34 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.3s)",
+        "  ✓  36 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  35 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  38 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  39 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  40 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  37 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  41 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  43 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  42 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  44 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  46 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.4s)",
+        "  ✓  45 [csv] › tests/e2e/analysis-sections.spec.ts:201:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  48 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  49 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  47 [csv] › tests/e2e/chart-trend.spec.ts:113:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  50 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)"
+      ],
+      "logSha256": "0464212983ac1f997b111c174cdde7127e80f73b143367dc76a966e1fc559164",
+      "exits": [
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 1622,
+          "code": 0,
+          "signal": null,
+          "time": 1795668402474
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 1621,
+          "code": 0,
+          "signal": null,
+          "time": 1795668404247
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 1672,
+          "code": 0,
+          "signal": null,
+          "time": 1795668410842
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 1696,
+          "code": 0,
+          "signal": null,
+          "time": 1795668414599
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 1817,
+          "code": 0,
+          "signal": null,
+          "time": 1795668421275
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 1818,
+          "code": 0,
+          "signal": null,
+          "time": 1795668423055
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 1896,
+          "code": 0,
+          "signal": null,
+          "time": 1795668429818
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 1918,
+          "code": 0,
+          "signal": null,
+          "time": 1795668433246
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 1990,
+          "code": 0,
+          "signal": null,
+          "time": 1795668439965
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 1996,
+          "code": 0,
+          "signal": null,
+          "time": 1795668441914
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 2074,
+          "code": 0,
+          "signal": null,
+          "time": 1795668448509
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 2094,
+          "code": 0,
+          "signal": null,
+          "time": 1795668452192
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 2172,
+          "code": 0,
+          "signal": null,
+          "time": 1795668458839
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 2173,
+          "code": 0,
+          "signal": null,
+          "time": 1795668460558
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 2232,
+          "code": 0,
+          "signal": null,
+          "time": 1795668467239
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 2253,
+          "code": 0,
+          "signal": null,
+          "time": 1795668470932
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 2309,
+          "code": 0,
+          "signal": null,
+          "time": 1795668477563
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 2310,
+          "code": 0,
+          "signal": null,
+          "time": 1795668479299
+        },
+        {
+          "spec": "analysis-sections.spec.ts",
+          "pid": 2359,
+          "code": 0,
+          "signal": null,
+          "time": 1795668486098
+        },
+        {
+          "spec": "chart-trend.spec.ts",
+          "pid": 2391,
+          "code": 0,
+          "signal": null,
+          "time": 1795668489733
+        }
+      ],
+      "crashEvents": 0
+    },
+    {
+      "run": "final-w2-repeat",
+      "summary": [
+        "  50 passed (1.6m)"
+      ],
+      "cases": [
+        "  ✓   2 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓   3 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓   1 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓   4 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   6 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓   5 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓   8 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓   9 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  10 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  11 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓  13 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  12 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  14 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  16 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  15 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  18 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  19 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  17 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  20 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  21 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.5s)",
+        "  ✓  23 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  22 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.1s)",
+        "  ✓  24 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  26 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  25 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  28 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  29 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  27 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓  30 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.3s)",
+        "  ✓  31 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.3s)",
+        "  ✓  33 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.3s)",
+        "  ✓  32 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.2s)",
+        "  ✓  34 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  36 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  35 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.6s)",
+        "  ✓  38 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  39 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  37 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  40 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)",
+        "  ✓  41 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.4s)",
+        "  ✓  43 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  42 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  44 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  46 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.4s)",
+        "  ✓  45 [csv] › tests/e2e/analysis-sections.spec.ts:198:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.6s)",
+        "  ✓  48 [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.2s)",
+        "  ✓  49 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual (1.2s)",
+        "  ✓  47 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (8.0s)",
+        "  ✓  50 [csv] › tests/e2e/project-subset-analysis.spec.ts:240:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual (1.2s)"
+      ],
+      "logSha256": "9da70dfeb4b4c65965b354cc901cc4a51bebfdcf45b1768ab61728873ac3a790"
+    }
+  ],
+  "finalTestFiles": {
+    "tests/e2e/panel.ts": "0f11019c2f9e9197eb3a3468ab4414c3ddbed8d8f1a1613f9116d6af6f755919",
+    "tests/e2e/csv-text.spec.ts": "e75cd1c8ee325589b9884edb4720ea9b356c9bd2bb64216dcd188db18535e35e",
+    "tests/e2e/project-subset-analysis.spec.ts": "34ed94ed0fecd44fa8cb30e74588b6c92d6d13f8f5d4247c25ce94cfd4d1fbb8"
+  }
+}

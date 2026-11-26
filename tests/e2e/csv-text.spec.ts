@@ -125,6 +125,8 @@ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes
  await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
  await expect(page.locator('.toast')).toContainText('Datos de operación no válidos')
  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({csvView:'table',headers:['ID','Nombre'],dirty:false})
+ // La lectura auxiliar no debe cancelar la primera carga de la interfaz.
+ await expect(table().locator('.csv-row')).toHaveCount(2)
  expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:1}),doc.id)).rows.map(row=>row.cells)).toEqual([['001','Ana'],['9007199254740993','dos\nlíneas']])
  expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
  await expect(input).toHaveValue(draft)

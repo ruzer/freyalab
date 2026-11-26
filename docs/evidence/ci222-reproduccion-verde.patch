@@ -1,0 +1,175 @@
+diff --git a/tests/e2e/csv-text.spec.ts b/tests/e2e/csv-text.spec.ts
+index b82eb427..0e2628c5 100644
+--- a/tests/e2e/csv-text.spec.ts
++++ b/tests/e2e/csv-text.spec.ts
+@@ -10,10 +10,72 @@ const source='ID,Nombre\n"001","Ana"\n9007199254740993,"dos\nlíneas"\n'
+ async function launch(extra:Record<string,string>={}){const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_FOLDER:files,...extra}});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.getByRole('button',{name:'Abrir',exact:true}).waitFor()}
+ async function quit(){await closeElectron(app)}
+ test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-txt01-'));files=join(folder,'files');await mkdir(files);await writeFile(join(files,'datos.csv'),source);await writeFile(join(files,'datos.tsv'),source.replaceAll(',','\t'));await launch()})
+-test.afterEach(async()=>{await quit();await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
++test.afterEach(async({},info)=>{await observeCsvPageRace(info);await quit();await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+ const views=()=>page.getByRole('group',{name:'Vista del CSV',exact:true})
+ const table=()=>page.getByRole('grid',{name:'Tabla de datos',exact:true})
+ const editor=()=>page.getByRole('textbox',{name:'Editor CSV como texto',exact:true})
++// Sonda temporal CI222, solo en el proceso de prueba; no sustituye resultados reales.
++async function armCsvPageRace(){
++ if(process.env.FREYALAB_CI222_CSV_PROBE!=='1')return
++ await app.evaluate(({ipcMain})=>{
++  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++  type Held={event:Electron.IpcMainInvokeEvent;args:unknown[];resolve:(value:unknown)=>void;reject:(reason:unknown)=>void;started?:Promise<unknown>}
++  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++  const events:{sequence:number;event:string;query?:unknown;error?:string}[]=[]
++  const log=(event:string,query?:unknown,error?:string)=>events.push({sequence:events.length+1,event,...query===undefined?{}:{query},...error===undefined?{}:{error}})
++  let first:Held|undefined,target='',released=false
++  const startUI=()=>{
++   if(!first)return undefined
++   if(first.started)return first.started
++   const held=first;log('ui:start',held.args[2]);held.started=original(held.event,...held.args)
++   void held.started.then(value=>{log('ui:success');held.resolve(value)},error=>{log('ui:error',undefined,String(error));held.reject(error)})
++   return held.started
++  }
++  const probe={events,get held(){return !!first&&!first.started},get started(){return !!first?.started},get target(){return target},releaseUI:()=>{released=true;log('release:external');startUI()}}
++  Reflect.set(globalThis,'ci222CsvProbe',probe)
++  handlers.set('freya',async(event,...args)=>{
++   const query=args[2] as {limit?:number;requestId?:number}|undefined
++   if(args[0]==='page'&&query?.limit===200&&!target){
++    target=String(args[1]);log('ui:held',query)
++    if(released)return original(event,...args)
++    return new Promise<unknown>((resolve,reject)=>{first={event,args,resolve,reject}})
++   }
++   if(args[0]==='page'&&String(args[1])===target&&query?.limit===10){
++    log('auxiliary:arrived',query)
++    if(first&&!first.started){
++     // Encola ambas peticiones reales al worker en el mismo turno. El auxiliar
++     // aumenta el ticket y cancela UI; no se inventa ningún resultado o error.
++     const ui=startUI()!,auxiliary=original(event,...args)
++     const outcomes=await Promise.allSettled([ui,auxiliary]);log('pair:settled')
++     if(outcomes[1].status==='rejected'){log('auxiliary:error',undefined,String(outcomes[1].reason));throw outcomes[1].reason}
++     log('auxiliary:success');return outcomes[1].value
++    }
++    try{const result=await original(event,...args);log('auxiliary:success');return result}
++    catch(error){log('auxiliary:error',undefined,String(error));throw error}
++   }
++   return original(event,...args)
++  })
++ })
++}
++async function observeCsvPageRace(info:{attach:(name:string,options:{body:string;contentType:string})=>Promise<void>}){
++ if(process.env.FREYALAB_CI222_CSV_PROBE!=='1')return
++ const probe=await app.evaluate(()=>{
++  const probe=Reflect.get(globalThis,'ci222CsvProbe')
++  return probe?{events:probe.events,held:probe.held,started:probe.started,target:probe.target}:null
++ }).catch(()=>null)
++ if(!probe)return
++ const dom=await page.evaluate(()=>({
++  warning:document.querySelector('.csv-workspace .warning-banner')?.textContent,
++  rows:document.querySelectorAll('.csv-scroll .csv-row').length,
++  toast:document.querySelector('.toast')?.textContent,
++  status:document.querySelector('.csv-status')?.textContent,
++  headerEditDisabled:(document.querySelector('[aria-label="Editar encabezado 1"]') as HTMLButtonElement|null)?.disabled,
++ })).catch(error=>({error:String(error)}))
++ const body=JSON.stringify({probe,dom},null,2);console.log('[ci222-csv-probe] '+body)
++ await info.attach('ci222-csv-probe',{body,contentType:'application/json'})
++ // La señal existe independientemente de que llegue o no la lectura auxiliar.
++ await app.evaluate(()=>Reflect.get(globalThis,'ci222CsvProbe')?.releaseUI()).catch(()=>{})
++}
+ async function openCsv(){const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),join(files,'datos.csv'));await expect(table()).toBeVisible();return doc}
+ 
+ test('A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo',async()=>{
+@@ -118,6 +180,7 @@ test('C: una edición rechazada por tamaño no permite guardar, cerrar ni cambia
+ })
+ 
+ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar',async()=>{
++ await armCsvPageRace()
+  const doc=await openCsv(),original=await readFile(join(files,'datos.csv')),draft='x'.repeat(10001)
+  await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click()
+  const input=page.getByRole('textbox',{name:'Nombre del encabezado',exact:true});await input.fill(draft);await expect(input).toBeFocused()
+@@ -125,6 +188,11 @@ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes
+  await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
+  await expect(page.locator('.toast')).toContainText('Datos de operación no válidos')
+  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({csvView:'table',headers:['ID','Nombre'],dirty:false})
++ if(process.env.FREYALAB_CI222_CSV_PROBE==='1'){
++  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'ci222CsvProbe').held)).toBe(true)
++  if(process.env.FREYALAB_CI222_CSV_RELEASE_BEFORE_READ==='1')await app.evaluate(()=>Reflect.get(globalThis,'ci222CsvProbe').releaseUI())
++ }
++ await expect(table().locator('.csv-row')).toHaveCount(2)
+  expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:1}),doc.id)).rows.map(row=>row.cells)).toEqual([['001','Ana'],['9007199254740993','dos\nlíneas']])
+  expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
+  await expect(input).toHaveValue(draft)
+diff --git a/tests/e2e/panel.ts b/tests/e2e/panel.ts
+index 0bf4d3e5..45912a4b 100644
+--- a/tests/e2e/panel.ts
++++ b/tests/e2e/panel.ts
+@@ -111,7 +111,11 @@ export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'
+  await expect(fields.locator('.field-list')).toHaveAttribute('aria-busy','false')
+  if(keyboard)await entry.press('Shift+F10')
+  else{
++  await entry.focus()
+   await entry.hover()
++  // Sonda temporal: otro worker mueve el puntero entre hover y click.
++  if(field==='Ingreso'||field==='Y')await page.mouse.move(0,0)
++  console.log('CI222-HOVER',JSON.stringify(await entry.evaluate(node=>({hover:node.matches(':hover'),focus:node.matches(':focus-within'),used:node.classList.contains('used'),visibility:getComputedStyle(node.querySelector('button')!).visibility}))))
+   await entry.getByRole('button',{name:await translated(page,'charts.fields.more',{field}),exact:true}).click()
+  }
+  const zoneLabel=await translated(page,'charts.fields.'+zone),destinations=await Promise.all(['charts.fields.destination','charts.fields.moveDestination'].map(key=>translated(page,key,{zone:zoneLabel}))),recommended=await translated(page,'charts.fields.recommended')
+diff --git a/tests/e2e/project-subset-analysis.spec.ts b/tests/e2e/project-subset-analysis.spec.ts
+index 2b6d9131..c7f34ed5 100644
+--- a/tests/e2e/project-subset-analysis.spec.ts
++++ b/tests/e2e/project-subset-analysis.spec.ts
+@@ -23,14 +23,55 @@ test.beforeEach(async({},info)=>{
+   env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:locale,FREYALAB_USER_DATA:join(root,'profile'),FREYALAB_TEST_FOLDER:folder,FREYALAB_TEST_PROJECT_SOURCE_PATH:source}})
+  page=await app.firstWindow();pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));await page.waitForFunction(()=>!!window.freya)
+  await page.setViewportSize({width:1440,height:900})
++
++ // SONDA TEMPORAL CI-222: ensancha solo la devolución real de project:create.
++ // El evento project ya se publicó; el formulario Crear sigue esperando su IPC.
++ if(process.env.FREYALAB_CI222_PROJECT_PROBE==='1'&&info.title.includes('Analizar ejecuta los cambios guardados'))await app.evaluate(({ipcMain})=>{
++  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++  const probe={phase:'installed',calls:[] as string[],observation:undefined as unknown,arm:undefined as undefined|(()=>Promise<void>)}
++  Reflect.set(globalThis,'ci222ProjectCreateProbe',probe)
++  handlers.set('freya',async(event,...args)=>{
++   const operation=String(args[0]);probe.calls.push(operation);if(operation==='project:pickSource')console.log('CI222-PICK',await event.sender.executeJavaScript(`document.querySelectorAll('dialog[open][aria-label="Nuevo proyecto"]').length`))
++   const value=await original(event,...args)
++   if(operation!=='project:create')return value
++   const name='__ci222CreateHeld'
++   await event.sender.executeJavaScript(`(()=>{
++    const inspect=()=>({active:document.activeElement?.outerHTML,openDialogs:[...document.querySelectorAll('dialog[open]')].map(node=>({label:node.getAttribute('aria-label'),html:node.outerHTML})),add:[...document.querySelectorAll('[aria-label]')].filter(node=>node.getAttribute('aria-label')==='Añadir fuente…').map(node=>node.outerHTML)})
++    let release
++    const state={armed:false,keydown:null,keyup:null,initial:inspect(),done:new Promise(resolve=>release=resolve)}
++    globalThis['${name}']=state
++    const down=event=>{if(state.armed&&event.key==='Enter')state.keydown={target:event.target?.outerHTML,...inspect()}}
++    const up=event=>{if(!state.armed||event.key!=='Enter')return;state.keyup={target:event.target?.outerHTML,...inspect()};document.removeEventListener('keydown',down,true);document.removeEventListener('keyup',up,true);release({initial:state.initial,keydown:state.keydown,keyup:state.keyup})}
++    document.addEventListener('keydown',down,true);document.addEventListener('keyup',up,true)
++   })()`)
++   probe.arm=async()=>{await event.sender.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{globalThis['${name}'].armed=true;document.dispatchEvent(new KeyboardEvent('keyup',{key:'Enter',bubbles:true}));resolve()})))`)}
++   probe.phase='held'
++   probe.observation=await event.sender.executeJavaScript(`globalThis['${name}'].done`)
++   probe.phase='released'
++   return value
++  })
++ })
++})
++test.afterEach(async({},info)=>{
++ if(process.env.FREYALAB_CI222_PROJECT_PROBE==='1'&&app){
++  const observation=await app.evaluate(()=>{const value=Reflect.get(globalThis,'ci222ProjectCreateProbe');return value?{phase:value.phase,calls:value.calls,observation:value.observation}:null}).catch(error=>({probeError:String(error)}))
++  console.log('CI222_PROJECT_PROBE '+JSON.stringify(observation))
++  await info.attach('ci222-project-create-observation',{body:JSON.stringify(observation,null,2),contentType:'application/json'})
++ }
++ try{expect(pageErrors).toEqual([])}finally{try{if(app)await closeElectron(app)}finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}
+ })
+-test.afterEach(async()=>{try{expect(pageErrors).toEqual([])}finally{try{if(app)await closeElectron(app)}finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}})
+ 
+ async function registeredSubset(){
+  await page.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
+  const create=page.getByRole('dialog',{name:tr('project.new'),exact:true})
+  await create.getByRole('button',{name:tr('project.pickFolder'),exact:true}).press('Enter')
+  await create.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
++ if(process.env.FREYALAB_CI222_PROJECT_PROBE==='1'){
++  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'ci222ProjectCreateProbe')?.phase)).toBe('held')
++  await app.evaluate(async()=>{await Reflect.get(globalThis,'ci222ProjectCreateProbe').arm()})
++ }
++ await expect(create).toHaveCount(0)
+  const add=panel().getByRole('button',{name:tr('project.source.add'),exact:true});await expect(add).toBeEnabled();await add.press('Enter')
+  const registration=page.getByRole('dialog',{name:tr('project.source.add'),exact:true})
+  await expect(registration.getByRole('listitem')).toHaveText(['ID','Entidad','Edad','Ingreso','Nota'])
