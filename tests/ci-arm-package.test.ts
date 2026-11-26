@@ -117,12 +117,12 @@ it('ARM mantiene 75 minutos, dos workers rápidos y un worker serial',()=>{
  expect(verifySteps().find(item=>item.name===packageName)?.block).toContain('run: npx playwright test tests/e2e/structural-context.spec.ts')
 })
 
-it('repartir ARM no traslada la fase serial de Intel ni incorpora Intel a los PR',()=>{
+it('Intel conserva serial en shell-md y sigue fuera de los PR y push',()=>{
  expect(matrix('pull_request',true).filter(job=>job.os==='macos-15-intel')).toEqual([])
  expect(matrix('push',true).filter(job=>job.os==='macos-15-intel')).toEqual([])
  for(const event of ['schedule','workflow_dispatch']){
   const jobs=matrix(event,true).filter(job=>job.os==='macos-15-intel'),serial='E2E perf and solo (macOS and Windows)'
   expect(jobs.map(job=>job.part)).toEqual(['shell-md','csv','package'])
-  for(const job of jobs)expect(selected(job,event,true).includes(serial)).toBe(job.part==='csv')
+  for(const job of jobs)expect(selected(job,event,true).includes(serial)).toBe(job.part==='shell-md')
  }
 })

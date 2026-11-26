@@ -75,7 +75,7 @@ it('Ubuntu reparte PR con y sin paquete y push sin cambiar la selección de prue
  ])
  // La comprobación de identidades enumera estos mismos filtros y la fase serial completa.
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
- expect(workflow).toMatch(/name: E2E perf and solo \(Linux\)\n\s*if: [^\n]*matrix\.part != 'shell-md'/)
+ expect(workflow).toMatch(/name: E2E perf and solo \(Linux\)\n\s*if: [^\n]*matrix\.part == 'shell-md'/)
  expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo\n/)
 })
 
@@ -92,6 +92,27 @@ it.each(['windows-2025','ubuntu-24.04'])('%s conserva todas las identidades: rá
    .toEqual(['--project=shell --project=md','--project=csv'])
  }
 })
+
+it.each([['push','ubuntu-24.04'],['schedule','macos-15-intel'],['workflow_dispatch','macos-15-intel']])(
+ '%s %s ejecuta perf/solo una vez en shell-md, después de rápidas y con cancelación', (event,os)=>{
+  const jobs=matrix(event,true).filter(job=>job.os===os)
+  expect(jobs.length).toBeGreaterThan(1)
+  const serial=step(os==='ubuntu-24.04'?'E2E perf and solo (Linux)':'E2E perf and solo (macOS and Windows)')
+  const selected:string[]=[]
+  for(const job of jobs){
+   for(const outcome of ['success','failure','skipped']){
+    const context={github:{event_name:event},matrix:job,runner:{os:os==='ubuntu-24.04'?'Linux':'macOS'},
+     steps:{e2e_fast_linux:{outcome:os==='ubuntu-24.04'?outcome:'skipped'},
+      e2e_fast_desktop:{outcome:os==='macos-15-intel'?outcome:'skipped'}}}
+    const active=!!expression(serial.condition,context)
+    expect(active).toBe(job.part==='shell-md'&&outcome!=='skipped')
+    if(active&&outcome==='success')selected.push(job.part!)
+    expect(!!expression(serial.condition,{...context,cancelled:()=>true})).toBe(false)
+   }
+  }
+  expect(selected).toEqual(['shell-md'])
+  expect(serial.block).toMatch(/test:e2e:perf -- --workers=1 --output=test-results-solo(?:\n|$)/)
+ })
 
 function step(name:string){
  const found=verifySteps().find(item=>item.name===name)
@@ -127,7 +148,7 @@ function ubuntuCommand(name:string,values:ReturnType<typeof ubuntuContext>){
  return run.replace(/\$\{\{([\s\S]*?)\}\}/g,(_,code:string)=>String(expression(code,values)??'')).trim().split(/\s+/)
 }
 const plans:Plan[]=[{full:false,e2e:[]},{full:false,e2e:['shell']},{full:false,e2e:['shell','md']},{full:false,e2e:['shell','csv']},{full:true,e2e:['shell','md','csv']}]
-it.each([false,true])('Ubuntu PR paquete=%s intersecta áreas y ejecuta serial solo en CSV, incluso sin rápidas CSV',pack=>{
+it.each([false,true])('Ubuntu PR paquete=%s intersecta áreas y ejecuta serial solo en shell-md, incluso sin rápidas CSV',pack=>{
  const jobs=matrix('pull_request',pack).filter(job=>job.os==='ubuntu-24.04')
  expect(jobs).toHaveLength(2)
  for(const plan of plans){
@@ -142,13 +163,13 @@ it.each([false,true])('Ubuntu PR paquete=%s intersecta áreas y ejecuta serial s
     'xvfb-run','-a','npm','run','test:e2e:fast','--','--workers=1','--output=test-results-fast',...outputs.fast.split(' '),
    ])
   }
-  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[0])).toBe(false)
-  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[1])).toBe(true)
-  expect(ubuntuCommand('E2E perf and solo (PR areas)',values[1])).toEqual([
+  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[0])).toBe(true)
+  expect(!!expression(step('E2E perf and solo (PR areas)').condition,values[1])).toBe(false)
+  expect(ubuntuCommand('E2E perf and solo (PR areas)',values[0])).toEqual([
    'xvfb-run','-a','npm','run','test:e2e:perf','--','--workers=1','--output=test-results-solo',...original,
   ])
-  // Perf construye también cuando la intersección rápida CSV está vacía, antes del paquete Linux.
-  expect(scripts['test:e2e:perf']).toMatch(/^npm run build && /)
+  // El paquete no puede depender del build de otra máquina: CSV construye si sus rápidas se omiten.
+  expect(!!expression(step('run: npm run build').condition,values[1])).toBe(pack&&values[1].steps.e2e_fast_pr.outcome==='skipped')
   for(const [index,value] of values.entries()){
    for(const name of ['run: npm run check','run: npm test','Large-file editor experiments (correctness on small hostile fixtures)']){
     expect(!!expression(step(name).condition,value)).toBe(index===0)
@@ -158,7 +179,7 @@ it.each([false,true])('Ubuntu PR paquete=%s intersecta áreas y ejecuta serial s
  }
 })
 it('Ubuntu no pierde serial ante fallo rápido ni la ejecuta con selector fallido u omitido o cancelación',()=>{
- const job=matrix('pull_request',true).find(job=>job.os==='ubuntu-24.04'&&job.part==='csv-package')
+ const job=matrix('pull_request',true).find(job=>job.os==='ubuntu-24.04'&&job.part==='shell-md')
  expect(job).toBeDefined()
  const serial=step('E2E perf and solo (PR areas)').condition
  const full:Plan={full:true,e2e:['shell','md','csv']}
@@ -168,14 +189,31 @@ it('Ubuntu no pierde serial ante fallo rápido ni la ejecuta con selector fallid
  for(const outcome of ['failure','skipped']){
   const missing=ubuntuContext(job!,true,{full:false,e2e:['shell','md']})
   missing.steps.windows_projects.outcome=outcome
+  missing.steps.e2e_fast_pr.outcome='skipped'
   expect(!!expression(serial,missing)).toBe(false)
  }
 })
-it('Ubuntu conserva 45 minutos y un worker, y cada confirmación la produce solo su parte aprobada',()=>{
+it('el paquete Ubuntu con rápidas vacías construye localmente solo con selector aprobado y sin fallo o cancelación',()=>{
+ const job=matrix('pull_request',true).find(job=>job.os==='ubuntu-24.04'&&job.part==='csv-package')!
+ const context=ubuntuContext(job,true,{full:false,e2e:['shell','md']})
+ const build=step('run: npm run build').condition
+ expect(context.steps.e2e_fast_pr.outcome).toBe('skipped')
+ expect(!!expression(build,context)).toBe(true)
+ expect(!!expression(build,{...context,success:()=>false})).toBe(false)
+ expect(!!expression(build,{...context,cancelled:()=>true})).toBe(false)
+ for(const outcome of ['failure','skipped']){
+  context.steps.windows_projects.outcome=outcome
+  expect(!!expression(build,context)).toBe(false)
+ }
+ context.steps.windows_projects.outcome='success'
+ context.steps.windows_projects.outputs.fast='--project=csv'
+ expect(!!expression(build,context)).toBe(false)
+})
+it('Ubuntu conserva 60 minutos y un worker, y cada confirmación la produce solo su parte aprobada',()=>{
  const timeout=workflow.match(/^    timeout-minutes: (.+)$/m)?.[1],workers=workflow.match(/^      FREYALAB_E2E_FAST_WORKERS: (.+)$/m)?.[1]
  expect(timeout).toBeDefined();expect(workers).toBeDefined()
- for(const pack of [true,false])for(const job of matrix('pull_request',pack).filter(job=>job.os==='ubuntu-24.04')){
-  expect(expression(timeout!,{matrix:job,startsWith:(text:string,prefix:string)=>text.startsWith(prefix)})).toBe(45);expect(expression(workers!,{matrix:job})).toBe('1')
+ for(const [event,pack] of [['pull_request',true],['pull_request',false],['push',true]] as const)for(const job of matrix(event,pack).filter(job=>job.os==='ubuntu-24.04')){
+  expect(expression(timeout!,{matrix:job,startsWith:(text:string,prefix:string)=>text.startsWith(prefix)})).toBe(60);expect(expression(workers!,{matrix:job})).toBe('1')
  }
  for(const [output,parts] of [['ubuntu_shell_md',['shell-md']],['ubuntu_csv',['csv','csv-package']]] as const){
   const source=workflow.match(new RegExp('^      '+output+': (.+)$','m'))?.[1]
@@ -196,7 +234,7 @@ it('la parte empaquetada construye su app y conserva exactamente los specs del p
   for(const job of matrix(event,pack)){
    const packaged=!!job.executable&&(event!=='pull_request'||pack)
    const context={github:{event_name:event},matrix:job,runner:{os:job.os.startsWith('windows')?'Windows':job.os.startsWith('macos')?'macOS':'Linux'},
-    needs:{areas:{outputs:{package:String(pack)}}}}
+    needs:{areas:{outputs:{package:String(pack)}}},steps:{e2e_fast_pr:{outcome:'success'}}}
    expect(!!expression(build!.condition,context)).toBe(job.part==='package'||(job.os==='windows-2025'&&packaged))
    expect(!!expression(packageStep!.condition,context)).toBe(packaged)
   }
