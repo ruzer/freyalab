@@ -36,7 +36,7 @@ function projects(job:MatrixJob,plan:Plan){
 
 function context(job:MatrixJob,event:string,pack:boolean,fast='success',cancelled=false,plan=full){
  const outputs=projects(job,plan),packaged=!!job.executable&&(event!=='pull_request'||pack)
- return {github:{event_name:event},matrix:job,runner:{os:'Windows'},env:{FREYALAB_E2E_FAST_WORKERS:'1'},
+ return {github:{event_name:event},matrix:job,runner:{os:'Windows'},env:{FREYALAB_E2E_FAST_WORKERS:'2'},
   needs:{areas:{outputs:{package:String(pack)}}},success:()=>fast==='success'&&!cancelled,cancelled:()=>cancelled,
   steps:{windows_projects:{outputs},e2e_fast_pr:{outcome:event==='pull_request'&&outputs.fast?fast:'skipped'},
    e2e_fast_linux:{outcome:'skipped'},e2e_fast_desktop:{outcome:event!=='pull_request'?fast:'skipped'},
@@ -102,7 +102,7 @@ it.each<Plan>([{full:false,e2e:[]},{full:false,e2e:['shell']},{full:false,e2e:['
    const active=expression<boolean>(step('E2E fast (PR areas)').condition,value)
    expect(active).toBe(outputs.fast!=='')
    if(active)expect(command('E2E fast (PR areas)',value)).toEqual([
-    'npm','run','test:e2e:fast','--','--workers=1','--output=test-results-fast',...outputs.fast.split(' '),
+    'npm','run','test:e2e:fast','--','--workers=2','--output=test-results-fast',...outputs.fast.split(' '),
    ])
   }
   expect(values[0].steps.windows_projects.outputs.serial.split(' ')).toEqual(original)
@@ -135,13 +135,13 @@ it.each(cases)('un fallo de rápidas conserva serial y paquete Windows; una canc
  expect(expression<boolean>(step(packageName).condition,failedPackage)).toBe(false)
 })
 
-it('las partes Windows conservan 60 minutos, un worker y el reintento existente',()=>{
+it('las partes Windows conservan 60 minutos, dos workers rápidos, uno serial y el reintento existente',()=>{
  const timeout=workflow.match(/^    timeout-minutes: (.+)$/m)?.[1]
  const workers=workflow.match(/^      FREYALAB_E2E_FAST_WORKERS: (.+)$/m)?.[1]
  expect(timeout).toBeDefined();expect(workers).toBeDefined()
  for(const [event,pack] of cases)for(const job of matrix(event,pack).filter(job=>job.os==='windows-2025')){
   expect(expression<number>(timeout!,{matrix:job})).toBe(60)
-  expect(expression<string>(workers!,{matrix:job})).toBe('1')
+  expect(expression<string>(workers!,{matrix:job})).toBe('2')
  }
  expect(step('E2E perf and solo (macOS and Windows)').block).toContain('run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo')
  expect(workflow).not.toMatch(/--(?:retries|repeat-each|pass-with-no-tests)\b/)
